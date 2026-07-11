@@ -70,8 +70,10 @@ export type CvGenerateAnalysisTranslations = {
 export type CvGenerateActionsTranslations = {
   analyze: string
   analyzing: string
+  analyzingHint: string
   generate: string
   generating: string
+  generatingHint: string
 }
 
 export type CvGenerateTailoredTranslations = {
@@ -88,6 +90,36 @@ export type CvGenerateErrorsTranslations = {
   analyzeFailed: string
   analysisRequired: string
   generateFailed: string
+}
+
+export type CvGenerateStepsTranslations = {
+  label: string
+  offer: string
+  analysis: string
+  tailored: string
+  current: string
+  progress: string
+  statusOffer: string
+  statusAnalysis: string
+  statusTailored: string
+}
+
+export type CvGenerateEmptyTranslations = {
+  analysisTitle: string
+  analysisDescription: string
+  tailoredTitle: string
+  tailoredDescription: string
+}
+
+export type CvGenerateInsightsTranslations = {
+  title: string
+  description: string
+}
+
+export type CvGenerateHintsTranslations = {
+  noActiveCv: string
+  analysisRequired: string
+  jobDescriptionTooShort: string
 }
 
 export type CvGeneratePdfTranslations = {
@@ -144,6 +176,7 @@ export type CvGenerateCompatibilityTranslations = {
 export type CvGenerateTranslations = {
   activeCv: string
   noActiveCv: string
+  devMockBanner: string
   jobDescription: CvJobDescriptionTranslations
   outputLanguage: CvGenerateOutputLanguageTranslations
   compatibility: CvGenerateCompatibilityTranslations
@@ -152,11 +185,16 @@ export type CvGenerateTranslations = {
   tailored: CvGenerateTailoredTranslations
   pdf: CvGeneratePdfTranslations
   errors: CvGenerateErrorsTranslations
+  steps: CvGenerateStepsTranslations
+  empty: CvGenerateEmptyTranslations
+  insights: CvGenerateInsightsTranslations
+  hints: CvGenerateHintsTranslations
 }
 
 export type Translations = {
   app: {
     name: string
+    tagline: string
     version: string
   }
   nav: {
@@ -208,7 +246,7 @@ export type TranslationKey =
   | `pages.cv.library.${keyof CvLibraryTranslations}`
   | `pages.cv.library.errors.${keyof CvLibraryTranslations['errors']}`
   | `pages.cv.preview.${keyof CvPreviewTranslations}`
-  | `pages.cv.generate.${Exclude<keyof CvGenerateTranslations, 'jobDescription' | 'outputLanguage' | 'compatibility' | 'analysis' | 'actions' | 'tailored' | 'pdf' | 'errors'>}`
+  | `pages.cv.generate.${Exclude<keyof CvGenerateTranslations, 'jobDescription' | 'outputLanguage' | 'compatibility' | 'analysis' | 'actions' | 'tailored' | 'pdf' | 'errors' | 'steps' | 'empty' | 'insights' | 'hints'>}`
   | `pages.cv.generate.jobDescription.${keyof CvJobDescriptionTranslations}`
   | `pages.cv.generate.outputLanguage.${keyof CvGenerateOutputLanguageTranslations}`
   | `pages.cv.generate.compatibility.${Exclude<keyof CvGenerateCompatibilityTranslations, 'level' | 'location'>}`
@@ -220,4 +258,8 @@ export type TranslationKey =
   | `pages.cv.generate.tailored.${keyof CvGenerateTailoredTranslations}`
   | `pages.cv.generate.pdf.${keyof CvGeneratePdfTranslations}`
   | `pages.cv.generate.errors.${keyof CvGenerateErrorsTranslations}`
+  | `pages.cv.generate.steps.${keyof CvGenerateStepsTranslations}`
+  | `pages.cv.generate.empty.${keyof CvGenerateEmptyTranslations}`
+  | `pages.cv.generate.insights.${keyof CvGenerateInsightsTranslations}`
+  | `pages.cv.generate.hints.${keyof CvGenerateHintsTranslations}`
   | `pages.jobScraperMarket.${keyof Translations['pages']['jobScraperMarket']}`

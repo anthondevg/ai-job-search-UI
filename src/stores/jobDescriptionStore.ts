@@ -66,7 +66,8 @@ export const useJobDescriptionStore = create<JobDescriptionStore>()((set) => ({
 
   setCompatibility: (compatibility) => set({ compatibility }),
 
-  setError: (error) => set({ error, status: error ? 'error' : 'idle' }),
+  setError: (error) =>
+    set(error ? { error, status: 'error' } : { error: null }),
 
   resetAnalysis: () =>
     set({ analysis: null, compatibility: null, status: 'idle', error: null }),

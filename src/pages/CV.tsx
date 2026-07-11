@@ -10,11 +10,11 @@ export default function CV() {
 
   return (
     <div className="flex flex-1 flex-col p-4 sm:p-6 lg:p-8">
-      <header className="mb-4 sm:mb-6 lg:mb-8">
-        <h1 className="text-xl font-semibold text-heading sm:text-2xl">
+      <header className="mb-4 border-b border-border pb-4 sm:mb-6 sm:pb-6 lg:mb-8">
+        <h1 className="font-display text-xl font-semibold text-heading sm:text-2xl">
           {t('pages.cv.title')}
         </h1>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-1 max-w-2xl text-sm text-muted">
           {t('pages.cv.description')}
         </p>
       </header>

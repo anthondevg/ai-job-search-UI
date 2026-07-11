@@ -1,8 +1,10 @@
 import { useTranslation } from '../../hooks/useTranslation'
 import { useJobDescription } from '../../hooks/useJobDescription'
+import { useCvGeneration } from '../../hooks/useCvGeneration'
 
 export default function JobDescriptionInput() {
   const { t } = useTranslation()
+  const { isBusy } = useCvGeneration()
   const {
     text,
     hasText,
@@ -16,7 +18,7 @@ export default function JobDescriptionInput() {
     <section className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-heading">
+          <h2 className="font-display text-base font-semibold text-heading">
             {t('pages.cv.generate.jobDescription.title')}
           </h2>
           <p className="mt-1 text-sm text-muted">
@@ -28,7 +30,8 @@ export default function JobDescriptionInput() {
           <button
             type="button"
             onClick={clearText}
-            className="shrink-0 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-border-muted hover:text-body"
+            disabled={isBusy}
+            className="shrink-0 rounded-control border border-border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-border-muted hover:text-body disabled:pointer-events-none disabled:opacity-50"
           >
             {t('pages.cv.generate.jobDescription.clear')}
           </button>
@@ -45,14 +48,16 @@ export default function JobDescriptionInput() {
           value={text}
           onChange={(event) => handleTextChange(event.target.value)}
           placeholder={t('pages.cv.generate.jobDescription.placeholder')}
-          rows={14}
+          rows={20}
           maxLength={maxLength}
-          className="w-full resize-y rounded-xl border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-body placeholder:text-muted/70 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/20"
+          disabled={isBusy}
+          aria-busy={isBusy}
+          className="min-h-80 w-full resize-y rounded-card border border-border bg-surface-raised px-4 py-3 text-sm leading-relaxed text-body placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-60 lg:min-h-96"
         />
         <p className="text-xs text-muted">
           {t('pages.cv.generate.jobDescription.hint')}
         </p>
-        <p className="text-right text-xs text-muted">
+        <p className="text-right font-mono text-xs text-muted">
           {t('pages.cv.generate.jobDescription.characterCountLabel')}:{' '}
           {characterCount.toLocaleString()} / {maxLength.toLocaleString()}
         </p>

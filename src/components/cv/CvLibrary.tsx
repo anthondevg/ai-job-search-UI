@@ -29,7 +29,7 @@ export default function CvLibrary({
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-base font-semibold text-heading">
+        <h2 className="font-display text-base font-semibold text-heading">
           {t('pages.cv.library.title')}
         </h2>
         <p className="mt-1 text-sm text-muted">
@@ -38,11 +38,11 @@ export default function CvLibrary({
       </div>
 
       {isLoading ? (
-        <div className="rounded-xl border border-border bg-surface-muted px-4 py-6 text-sm text-muted">
+        <div className="rounded-card border border-border bg-surface-muted px-4 py-6 text-sm text-muted">
           {t('pages.cv.library.loading')}
         </div>
       ) : records.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-surface-muted/50 px-4 py-6 text-sm text-muted">
+        <div className="rounded-card border border-dashed border-border bg-surface-muted/50 px-4 py-6 text-sm text-muted">
           {t('pages.cv.library.empty')}
         </div>
       ) : (
@@ -53,10 +53,10 @@ export default function CvLibrary({
             return (
               <li
                 key={record.id}
-                className={`rounded-xl border bg-surface-muted p-4 transition-colors ${
+                className={`rounded-card border p-4 transition-colors ${
                   isActive
-                    ? 'border-accent/50 ring-1 ring-accent/20'
-                    : 'border-border hover:border-border-muted'
+                    ? 'border-2 border-accent bg-surface-raised shadow-sm'
+                    : 'border-border bg-surface-raised hover:border-border-muted'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -65,20 +65,28 @@ export default function CvLibrary({
                     onClick={() => onSelect(record.id)}
                     className="min-w-0 flex-1 text-left"
                   >
-                    <p className="truncate text-sm font-medium text-heading">
+                    <p className="truncate text-sm font-semibold text-heading">
                       {record.profile.personalInfo.name || record.fileName}
                     </p>
-                    <p className="mt-0.5 truncate text-xs text-muted">
+                    <p
+                      className={`mt-0.5 truncate font-mono text-xs ${
+                        isActive ? 'text-body' : 'text-muted'
+                      }`}
+                    >
                       {record.fileName}
                     </p>
-                    <p className="mt-1 text-xs text-muted/70">
+                    <p
+                      className={`mt-1 text-xs ${
+                        isActive ? 'text-muted' : 'text-muted/80'
+                      }`}
+                    >
                       {formatDate(record.createdAt, locale)}
                     </p>
                   </button>
 
                   <div className="flex shrink-0 items-center gap-2">
                     {isActive && (
-                      <span className="rounded-full bg-accent-subtle px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-accent">
+                      <span className="rounded-tag bg-accent px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-widest text-accent-foreground">
                         {t('pages.cv.library.active')}
                       </span>
                     )}
@@ -86,7 +94,7 @@ export default function CvLibrary({
                       type="button"
                       onClick={() => onDelete(record.id)}
                       aria-label={t('pages.cv.library.delete')}
-                      className="rounded-lg p-2 text-muted transition-colors hover:bg-danger-subtle hover:text-danger"
+                      className="rounded-control p-2 text-muted transition-colors hover:bg-danger-subtle hover:text-danger"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

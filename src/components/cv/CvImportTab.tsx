@@ -61,7 +61,7 @@ export default function CvImportTab() {
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-base font-semibold text-heading">
+          <h2 className="font-display text-base font-semibold text-heading">
             {t('pages.cv.upload.title')}
           </h2>
           <p className="mt-1 text-sm text-muted">
@@ -91,7 +91,7 @@ export default function CvImportTab() {
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           aria-busy={isParsing}
-          className={`rounded-xl border-2 border-dashed p-6 transition-colors sm:p-8 ${
+          className={`rounded-panel border-2 border-dashed p-6 transition-colors sm:p-8 ${
             isDragging
               ? 'border-accent/60 bg-accent-subtle/40'
               : 'border-border bg-surface-muted/40 hover:border-border-muted'
@@ -99,10 +99,10 @@ export default function CvImportTab() {
         >
           <div className="flex flex-col items-center text-center">
             <div
-              className={`mb-4 flex size-14 items-center justify-center rounded-full ${
+              className={`mb-4 flex size-14 items-center justify-center rounded-card border ${
                 isParsing
-                  ? 'bg-surface-tab text-muted'
-                  : 'bg-accent-subtle text-accent'
+                  ? 'border-border bg-surface-tab text-muted'
+                  : 'border-accent/40 bg-accent-subtle text-accent'
               }`}
             >
               {isParsing ? (
@@ -157,7 +157,7 @@ export default function CvImportTab() {
       </section>
 
       {error && (
-        <div className="rounded-lg border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
+        <div className="rounded-card border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
           {error}
         </div>
       )}

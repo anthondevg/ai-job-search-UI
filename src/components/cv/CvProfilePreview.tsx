@@ -20,20 +20,20 @@ export default function CvProfilePreview({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-base font-semibold text-heading">
+          <h2 className="font-display text-base font-semibold text-heading">
             {t('pages.cv.preview.title')}
           </h2>
           {fileName && (
-            <p className="mt-0.5 text-xs text-muted">{fileName}</p>
+            <p className="mt-0.5 font-mono text-xs text-muted">{fileName}</p>
           )}
         </div>
-        <span className="rounded-full bg-success-subtle px-3 py-1 text-xs font-medium text-success">
+        <span className="rounded-tag border border-success/40 bg-success-subtle px-2 py-0.5 font-mono text-xs font-medium text-success">
           {resolvedBadge}
         </span>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <section className="rounded-xl border border-border bg-surface-muted p-4">
+        <section className="rounded-card border border-border bg-surface-muted p-4">
           <h3 className="text-sm font-semibold text-heading">
             {t('pages.cv.preview.personalInfo')}
           </h3>
@@ -55,7 +55,7 @@ export default function CvProfilePreview({
           </dl>
         </section>
 
-        <section className="rounded-xl border border-border bg-surface-muted p-4">
+        <section className="rounded-card border border-border bg-surface-muted p-4">
           <h3 className="text-sm font-semibold text-heading">
             {t('pages.cv.preview.summary')}
           </h3>
@@ -64,16 +64,16 @@ export default function CvProfilePreview({
           </p>
         </section>
 
-        <section className="rounded-xl border border-border bg-surface-muted p-4 lg:col-span-2">
+        <section className="rounded-card border border-border bg-surface-muted p-4 lg:col-span-2">
           <h3 className="text-sm font-semibold text-heading">
             {t('pages.cv.preview.skills')}
           </h3>
           {profile.skills.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-1.5">
               {profile.skills.map((skill) => (
                 <span
                   key={skill}
-                  className="rounded-full bg-accent-subtle px-3 py-1 text-xs font-medium text-accent"
+                  className="rounded-tag border border-accent/40 bg-accent-subtle px-2 py-0.5 font-mono text-xs font-medium text-accent"
                 >
                   {skill}
                 </span>
@@ -86,7 +86,7 @@ export default function CvProfilePreview({
           )}
         </section>
 
-        <section className="rounded-xl border border-border bg-surface-muted p-4 lg:col-span-2">
+        <section className="rounded-card border border-border bg-surface-muted p-4 lg:col-span-2">
           <h3 className="text-sm font-semibold text-heading">
             {t('pages.cv.preview.experience')}
           </h3>
@@ -102,7 +102,7 @@ export default function CvProfilePreview({
                       <p className="font-medium text-heading">{item.role}</p>
                       <p className="text-sm text-body">{item.company}</p>
                     </div>
-                    <p className="text-xs text-muted">
+                    <p className="font-mono text-xs text-muted">
                       {item.startDate} – {item.endDate}
                     </p>
                   </div>

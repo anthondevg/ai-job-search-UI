@@ -10,6 +10,7 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS
 
 type ProfileCompatibilityCardProps = {
   compatibility: ProfileCompatibility
+  bare?: boolean
 }
 
 function getScoreTone(score: number) {
@@ -17,7 +18,7 @@ function getScoreTone(score: number) {
     return {
       ring: 'stroke-success',
       text: 'text-success',
-      glow: 'shadow-[0_0_24px_rgba(110,191,157,0.25)]',
+      glow: 'shadow-[0_0_24px_rgba(142,196,180,0.2)]',
     }
   }
 
@@ -25,14 +26,14 @@ function getScoreTone(score: number) {
     return {
       ring: 'stroke-accent',
       text: 'text-accent',
-      glow: 'shadow-[0_0_24px_rgba(123,140,255,0.2)]',
+      glow: 'shadow-[0_0_24px_rgba(154,175,217,0.18)]',
     }
   }
 
   return {
     ring: 'stroke-danger',
     text: 'text-danger',
-    glow: 'shadow-[0_0_24px_rgba(232,138,138,0.2)]',
+    glow: 'shadow-[0_0_24px_rgba(200,176,184,0.14)]',
   }
 }
 
@@ -50,7 +51,7 @@ function getEligibilityTone(eligibility: LocationEligibility) {
     case 'likely_eligible':
       return 'border-accent/30 bg-accent-subtle text-accent'
     case 'unclear':
-      return 'border-border bg-surface text-muted'
+      return 'border-border bg-surface-raised text-muted'
     case 'unlikely':
     case 'ineligible':
       return 'border-danger-border bg-danger-subtle text-danger'
@@ -59,6 +60,7 @@ function getEligibilityTone(eligibility: LocationEligibility) {
 
 export default function ProfileCompatibilityCard({
   compatibility,
+  bare = false,
 }: ProfileCompatibilityCardProps) {
   const { t } = useTranslation()
   const [animatedScore, setAnimatedScore] = useState(0)
@@ -94,7 +96,11 @@ export default function ProfileCompatibilityCard({
 
   return (
     <section
-      className={`rounded-xl border border-border bg-surface-muted p-4 transition-shadow duration-700 ${tone.glow}`}
+      className={
+        bare
+          ? 'space-y-5'
+          : `rounded-card border border-border bg-surface-muted p-4 transition-shadow duration-700 ${tone.glow}`
+      }
     >
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
         <div className="relative mx-auto flex size-36 shrink-0 items-center justify-center sm:mx-0">
@@ -137,10 +143,12 @@ export default function ProfileCompatibilityCard({
 
         <div className="min-w-0 flex-1 space-y-3">
           <div>
-            <h2 className="text-base font-semibold text-heading">
-              {t('pages.cv.generate.compatibility.title')}
-            </h2>
-            <p className="mt-1 text-sm font-medium text-body">
+            {!bare && (
+              <h2 className="font-display text-base font-semibold text-heading">
+                {t('pages.cv.generate.compatibility.title')}
+              </h2>
+            )}
+            <p className={`text-sm font-medium text-body ${bare ? '' : 'mt-1'}`}>
               {t(`pages.cv.generate.compatibility.level.${labelKey}`)}
             </p>
             {showSkillsBreakdown && (
@@ -156,7 +164,7 @@ export default function ProfileCompatibilityCard({
             )}
           </div>
 
-          <div className={`rounded-lg border p-3 ${locationTone}`}>
+          <div className={`rounded-control border p-3 ${locationTone}`}>
             <p className="text-xs font-medium uppercase tracking-wide opacity-80">
               {t('pages.cv.generate.compatibility.location.title')}
             </p>

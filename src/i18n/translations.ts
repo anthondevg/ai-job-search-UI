@@ -3,8 +3,9 @@ import type { Language, Translations } from './types'
 export const translations: Record<Language, Translations> = {
   en: {
     app: {
-      name: 'Job Search',
-      version: 'AI Job Search UI v0.1',
+      name: 'MatchCV',
+      tagline: 'Career Match Studio',
+      version: 'MatchCV v0.1',
     },
     nav: {
       cv: 'CV',
@@ -75,6 +76,8 @@ export const translations: Record<Language, Translations> = {
         generate: {
           activeCv: 'Active CV',
           noActiveCv: 'No active CV. Import one in the Import tab first.',
+          devMockBanner:
+            'DEV MOCK MODE — analyze and generate use local dummy data (no API calls).',
           jobDescription: {
             title: 'Job description',
             description:
@@ -130,8 +133,10 @@ export const translations: Record<Language, Translations> = {
           actions: {
             analyze: 'Analyze job description',
             analyzing: 'Analyzing...',
+            analyzingHint: 'Scanning the job posting. This may take a moment.',
             generate: 'Generate tailored CV',
             generating: 'Generating...',
+            generatingHint: 'Tailoring your CV from your source profile. Please wait.',
           },
           tailored: {
             badge: 'Tailored CV',
@@ -164,6 +169,34 @@ export const translations: Record<Language, Translations> = {
             analysisRequired: 'Analyze the job description before generating a tailored CV.',
             generateFailed: 'Failed to generate the tailored CV. Please try again.',
           },
+          steps: {
+            label: 'Generation workflow',
+            offer: 'Job posting',
+            analysis: 'Analysis',
+            tailored: 'Tailored CV',
+            current: 'In progress',
+            progress: 'Step {current} of {total}',
+            statusOffer: 'Paste the posting and analyze it',
+            statusAnalysis: 'Review the match, then generate your CV',
+            statusTailored: 'Your tailored CV is ready',
+          },
+          empty: {
+            analysisTitle: 'Analysis will appear here',
+            analysisDescription:
+              'Paste the job posting on the left and click Analyze to see compatibility and extracted requirements.',
+            tailoredTitle: 'Tailored CV will appear here',
+            tailoredDescription:
+              'After reviewing the match, choose a language and generate your adapted CV.',
+          },
+          insights: {
+            title: 'Job insights',
+            description: 'Compatibility score and requirements extracted from the posting.',
+          },
+          hints: {
+            noActiveCv: 'Import and select a CV in the Import tab first.',
+            analysisRequired: 'Analyze the job posting before generating.',
+            jobDescriptionTooShort: 'Paste at least 50 characters to analyze.',
+          },
         },
       },
       jobScraperMarket: {
@@ -176,8 +209,9 @@ export const translations: Record<Language, Translations> = {
   },
   es: {
     app: {
-      name: 'Búsqueda de Empleo',
-      version: 'AI Job Search UI v0.1',
+      name: 'MatchCV',
+      tagline: 'Estudio de Match Profesional',
+      version: 'MatchCV v0.1',
     },
     nav: {
       cv: 'CV',
@@ -248,6 +282,8 @@ export const translations: Record<Language, Translations> = {
         generate: {
           activeCv: 'CV activo',
           noActiveCv: 'No hay CV activo. Importa uno en la pestaña Importar primero.',
+          devMockBanner:
+            'MODO DEV MOCK — analizar y generar usan datos dummy locales (sin llamadas API).',
           jobDescription: {
             title: 'Descripción del puesto',
             description:
@@ -303,8 +339,10 @@ export const translations: Record<Language, Translations> = {
           actions: {
             analyze: 'Analizar descripción',
             analyzing: 'Analizando...',
+            analyzingHint: 'Escaneando la oferta. Puede tardar un momento.',
             generate: 'Generar CV adaptado',
             generating: 'Generando...',
+            generatingHint: 'Adaptando tu CV desde el perfil base. Espera un momento.',
           },
           tailored: {
             badge: 'CV adaptado',
@@ -339,6 +377,34 @@ export const translations: Record<Language, Translations> = {
               'Analiza la descripción del puesto antes de generar el CV adaptado.',
             generateFailed:
               'No se pudo generar el CV adaptado. Inténtalo de nuevo.',
+          },
+          steps: {
+            label: 'Flujo de generación',
+            offer: 'Oferta',
+            analysis: 'Análisis',
+            tailored: 'CV adaptado',
+            current: 'En curso',
+            progress: 'Paso {current} de {total}',
+            statusOffer: 'Pega la oferta y analízala',
+            statusAnalysis: 'Revisa el match y genera tu CV',
+            statusTailored: 'Tu CV adaptado está listo',
+          },
+          empty: {
+            analysisTitle: 'El análisis aparecerá aquí',
+            analysisDescription:
+              'Pega la oferta a la izquierda y pulsa Analizar para ver compatibilidad y requisitos extraídos.',
+            tailoredTitle: 'El CV adaptado aparecerá aquí',
+            tailoredDescription:
+              'Tras revisar el match, elige idioma y genera tu CV adaptado.',
+          },
+          insights: {
+            title: 'Insights de la oferta',
+            description: 'Compatibilidad y requisitos extraídos del anuncio.',
+          },
+          hints: {
+            noActiveCv: 'Importa y selecciona un CV en la pestaña Importar primero.',
+            analysisRequired: 'Analiza la oferta antes de generar.',
+            jobDescriptionTooShort: 'Pega al menos 50 caracteres para analizar.',
           },
         },
       },

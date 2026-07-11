@@ -1,66 +1,77 @@
 import { useTranslation } from '../../hooks/useTranslation'
+import { DEV_MOCK_GENERATE } from '../../config/devFlags'
 import { useCvGeneration } from '../../hooks/useCvGeneration'
-import { useActiveCvRecord } from '../../stores/cvStore'
-import CvGenerateActions from './CvGenerateActions'
-import CvOutputLanguageSelect from './CvOutputLanguageSelect'
-import JobDescriptionAnalysisPanel from './JobDescriptionAnalysisPanel'
+import CvGenerateActionBar from './CvGenerateActionBar'
+import CvGenerateResultsPanel from './CvGenerateResultsPanel'
+import CvGenerateStepper from './CvGenerateStepper'
 import JobDescriptionInput from './JobDescriptionInput'
-import ProfileCompatibilityCard from './ProfileCompatibilityCard'
-import TailoredCvPreview from './TailoredCvPreview'
 
 export default function CvGenerateTab() {
   const { t } = useTranslation()
-  const activeRecord = useActiveCvRecord()
-  const { analysis, compatibility, tailoredResult, jdError, generateError, outputLanguage } =
-    useCvGeneration()
+  const {
+    activeRecord,
+    analysis,
+    compatibility,
+    tailoredResult,
+    jdError,
+    generateError,
+    outputLanguage,
+    currentStep,
+  } = useCvGeneration()
 
   return (
-    <div className="space-y-6">
-      {activeRecord ? (
-        <div className="rounded-lg border border-border bg-surface-muted px-4 py-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">
-            {t('pages.cv.generate.activeCv')}
-          </p>
-          <p className="mt-1 text-sm font-medium text-heading">
-            {activeRecord.profile.personalInfo.name || activeRecord.fileName}
-          </p>
-          <p className="text-xs text-muted">{activeRecord.fileName}</p>
-        </div>
-      ) : (
-        <div className="rounded-lg border border-dashed border-border bg-surface-muted/40 px-4 py-3 text-sm text-muted">
-          {t('pages.cv.generate.noActiveCv')}
+    <div className="flex flex-col gap-6 pb-4">
+      {DEV_MOCK_GENERATE && (
+        <div
+          className="rounded-card border border-warm/40 bg-warm-subtle px-4 py-2 font-mono text-xs text-warm"
+          role="status"
+        >
+          {t('pages.cv.generate.devMockBanner')}
         </div>
       )}
 
-      <JobDescriptionInput />
-      <CvOutputLanguageSelect />
-      <CvGenerateActions />
+      <CvGenerateStepper currentStep={currentStep} />
 
-      {jdError && (
-        <div className="rounded-lg border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
-          {jdError}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start">
+        <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
+          {activeRecord ? (
+            <div className="rounded-card border-2 border-accent bg-surface-raised px-4 py-3 shadow-sm">
+              <p className="text-xs font-medium uppercase tracking-widest text-accent">
+                {t('pages.cv.generate.activeCv')}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-heading">
+                {activeRecord.profile.personalInfo.name || activeRecord.fileName}
+              </p>
+              <p className="font-mono text-xs text-body">{activeRecord.fileName}</p>
+            </div>
+          ) : (
+            <div className="rounded-card border border-dashed border-border bg-surface-muted/40 px-4 py-3 text-sm text-muted">
+              {t('pages.cv.generate.noActiveCv')}
+            </div>
+          )}
+
+          <JobDescriptionInput />
+
+          {jdError && (
+            <div
+              className="rounded-card border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger"
+              role="alert"
+            >
+              {jdError}
+            </div>
+          )}
         </div>
-      )}
 
-      {generateError && (
-        <div className="rounded-lg border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
-          {generateError}
-        </div>
-      )}
-
-      {compatibility && (
-        <ProfileCompatibilityCard compatibility={compatibility} />
-      )}
-
-      {analysis && <JobDescriptionAnalysisPanel analysis={analysis} />}
-
-      {tailoredResult && (
-        <TailoredCvPreview
-          profile={tailoredResult.profile}
-          meta={tailoredResult.meta}
+        <CvGenerateResultsPanel
+          analysis={analysis}
+          compatibility={compatibility}
+          tailoredResult={tailoredResult}
           outputLanguage={outputLanguage}
+          generateError={generateError}
         />
-      )}
+      </div>
+
+      <CvGenerateActionBar currentStep={currentStep} />
     </div>
   )
 }

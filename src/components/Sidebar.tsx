@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from '../hooks/useTranslation'
+import AppLogo, { AppLogoMark } from './AppLogo'
 import LanguageSwitcher from './LanguageSwitcher'
 
 type SidebarProps = {
@@ -51,13 +52,13 @@ export default function Sidebar({
       <div
         aria-hidden={!mobileOpen}
         onClick={onMobileClose}
-        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 lg:hidden ${
           mobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r border-sidebar-border bg-sidebar text-slate-200 transition-all duration-300 lg:relative lg:z-auto lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 lg:relative lg:z-auto lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         } w-64 ${collapsed ? 'lg:w-[72px]' : 'lg:w-64'}`}
       >
@@ -66,14 +67,11 @@ export default function Sidebar({
             showLabels ? 'justify-between px-4' : 'justify-center px-2'
           }`}
         >
-          {showLabels && (
-            <div className="flex items-center gap-2 overflow-hidden">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-bold text-surface">
-                AI
-              </div>
-              <span className="truncate text-sm font-semibold text-heading">
-                {t('app.name')}
-              </span>
+          {showLabels ? (
+            <AppLogo variant="sidebar" />
+          ) : (
+            <div className="text-sidebar-body max-lg:hidden">
+              <AppLogoMark className="size-8" />
             </div>
           )}
 
@@ -93,7 +91,7 @@ export default function Sidebar({
                   ? t('sidebar.expand')
                   : t('sidebar.collapse')
             }
-            className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-sidebar-hover hover:text-heading"
+            className="flex size-9 items-center justify-center rounded-control text-sidebar-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-heading"
           >
             {mobileOpen ? (
               <svg
@@ -122,7 +120,7 @@ export default function Sidebar({
                   collapsed ? 'rotate-180' : ''
                 }`}
               >
-                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <rect width="18" height="18" x="3" y="3" rx="0" />
                 <path d="M9 3v18" />
                 <path d="m14 9 3 3-3 3" />
               </svg>
@@ -130,7 +128,7 @@ export default function Sidebar({
           </button>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+        <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3">
           {navItems.map((item) => {
             const label = t(item.labelKey)
 
@@ -141,12 +139,12 @@ export default function Sidebar({
                 title={!showLabels ? label : undefined}
                 onClick={onMobileClose}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                    showLabels ? '' : 'justify-center'
+                  `mx-0.5 flex items-center gap-3 rounded-card border-l-2 px-3 py-2.5 text-sm font-medium transition-colors ${
+                    showLabels ? '' : 'justify-center border-l-0'
                   } ${
                     isActive
-                      ? 'bg-sidebar-active text-heading'
-                      : 'text-muted hover:bg-sidebar-hover hover:text-body'
+                      ? 'border-accent bg-sidebar-active text-sidebar-heading'
+                      : 'border-transparent text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-body'
                   }`
                 }
               >
@@ -160,11 +158,11 @@ export default function Sidebar({
         <div className="border-t border-sidebar-border p-4">
           {showLabels ? (
             <>
-              <LanguageSwitcher />
-              <p className="mt-3 text-xs text-muted">{t('app.version')}</p>
+              <LanguageSwitcher variant="sidebar" />
+              <p className="mt-3 text-xs text-sidebar-muted">{t('app.version')}</p>
             </>
           ) : (
-            <LanguageSwitcher compact />
+            <LanguageSwitcher compact variant="sidebar" />
           )}
         </div>
       </aside>

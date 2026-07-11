@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from './useTranslation'
 import {
   analyzeJobDescription as analyzeJobDescriptionApi,
@@ -7,8 +7,15 @@ import {
 import { useActiveCvRecord } from '../stores/cvStore'
 import { useGenerateStore } from '../stores/generateStore'
 import { useJobDescriptionStore } from '../stores/jobDescriptionStore'
+import { getGenerateStep } from '../utils/getGenerateStep'
 
 const MIN_JOB_DESCRIPTION_LENGTH = 50
+
+export type GenerateBlockedReason =
+  | 'noActiveCv'
+  | 'analysisRequired'
+  | 'jobDescriptionTooShort'
+  | null
 
 export function useCvGeneration() {
   const { t } = useTranslation()
@@ -36,17 +43,38 @@ export function useCvGeneration() {
   const setGenerateError = useGenerateStore((state) => state.setError)
 
   const hasText = text.trim().length >= MIN_JOB_DESCRIPTION_LENGTH
-  const canAnalyze = hasText && jdStatus !== 'analyzing'
+  const isAnalyzing = jdStatus === 'analyzing'
+  const isGenerating = generateStatus === 'generating'
+  const isBusy = isAnalyzing || isGenerating
+
+  const canAnalyze = hasText && !isBusy
   const canGenerate =
-    !!activeRecord &&
-    !!analysis &&
-    hasText &&
-    generateStatus !== 'generating' &&
-    jdStatus !== 'analyzing'
+    !!activeRecord && !!analysis && hasText && !isBusy
+
+  const currentStep = getGenerateStep({
+    hasAnalysis: !!analysis,
+    hasTailoredResult: !!tailoredResult,
+  })
+
+  const generateBlockedReason = useMemo((): GenerateBlockedReason => {
+    if (isBusy || canGenerate) return null
+    if (!activeRecord) return 'noActiveCv'
+    if (!analysis) return 'analysisRequired'
+    if (!hasText) return 'jobDescriptionTooShort'
+    return null
+  }, [activeRecord, analysis, canGenerate, hasText, isBusy])
 
   const analyzeJobDescription = useCallback(async () => {
     if (!hasText) {
       setJdError(t('pages.cv.generate.errors.jobDescriptionTooShort'))
+      return
+    }
+
+    if (useJobDescriptionStore.getState().status === 'analyzing') {
+      return
+    }
+
+    if (useGenerateStore.getState().status === 'generating') {
       return
     }
 
@@ -96,6 +124,14 @@ export function useCvGeneration() {
       return
     }
 
+    if (useGenerateStore.getState().status === 'generating') {
+      return
+    }
+
+    if (useJobDescriptionStore.getState().status === 'analyzing') {
+      return
+    }
+
     setGenerateStatus('generating')
     setGenerateError(null)
 
@@ -126,12 +162,10 @@ export function useCvGeneration() {
     text,
   ])
 
-  const isAnalyzing = jdStatus === 'analyzing'
-  const isGenerating = generateStatus === 'generating'
-
   return {
     activeRecord,
     text,
+    hasText,
     analysis,
     compatibility,
     tailoredResult,
@@ -141,6 +175,9 @@ export function useCvGeneration() {
     canGenerate,
     isAnalyzing,
     isGenerating,
+    isBusy,
+    currentStep,
+    generateBlockedReason,
     outputLanguage,
     setOutputLanguage,
     analyzeJobDescription,

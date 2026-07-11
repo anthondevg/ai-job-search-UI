@@ -40,7 +40,7 @@ export const useGenerateStore = create<GenerateStore>()((set) => ({
     set({ tailoredResult, status: tailoredResult ? 'ready' : 'idle', error: null }),
 
   setError: (error) =>
-    set({ error, status: error ? 'error' : 'idle' }),
+    set(error ? { error, status: 'error' } : { error: null }),
 
   reset: () => set({ status: 'idle', tailoredResult: null, error: null }),
 }))

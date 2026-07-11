@@ -3,22 +3,31 @@ import type { JobDescriptionAnalysis } from '../../types/jobDescription'
 
 type JobDescriptionAnalysisPanelProps = {
   analysis: JobDescriptionAnalysis
+  bare?: boolean
 }
 
-function TagList({ items, variant }: { items: string[]; variant: 'accent' | 'muted' }) {
+function TagList({
+  items,
+  variant,
+}: {
+  items: string[]
+  variant: 'keyword' | 'required' | 'preferred'
+}) {
   if (!items.length) return null
 
   const className =
-    variant === 'accent'
-      ? 'bg-accent-subtle text-accent'
-      : 'bg-surface-tab text-body'
+    variant === 'keyword'
+      ? 'border-accent/40 bg-accent-subtle text-accent'
+      : variant === 'required'
+        ? 'border-border bg-surface-tab text-body'
+        : 'border-border-muted bg-surface-raised text-muted'
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1.5">
       {items.map((item) => (
         <span
           key={item}
-          className={`rounded-full px-3 py-1 text-xs font-medium ${className}`}
+          className={`rounded-tag border px-2 py-0.5 font-mono text-xs font-medium ${className}`}
         >
           {item}
         </span>
@@ -29,23 +38,26 @@ function TagList({ items, variant }: { items: string[]; variant: 'accent' | 'mut
 
 export default function JobDescriptionAnalysisPanel({
   analysis,
+  bare = false,
 }: JobDescriptionAnalysisPanelProps) {
   const { t } = useTranslation()
 
-  return (
-    <section className="space-y-4 rounded-xl border border-border bg-surface-muted p-4">
-      <div>
-        <h2 className="text-base font-semibold text-heading">
-          {t('pages.cv.generate.analysis.title')}
-        </h2>
-        <p className="mt-1 text-sm text-muted">
-          {t('pages.cv.generate.analysis.description')}
-        </p>
-      </div>
+  const content = (
+    <>
+      {!bare && (
+        <div>
+          <h2 className="font-display text-base font-semibold text-heading">
+            {t('pages.cv.generate.analysis.title')}
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            {t('pages.cv.generate.analysis.description')}
+          </p>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted">
             {t('pages.cv.generate.analysis.roleTitle')}
           </p>
           <p className="mt-1 text-sm font-medium text-heading">
@@ -53,7 +65,7 @@ export default function JobDescriptionAnalysisPanel({
           </p>
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted">
             {t('pages.cv.generate.analysis.seniority')}
           </p>
           <p className="mt-1 text-sm font-medium text-heading">
@@ -68,7 +80,7 @@ export default function JobDescriptionAnalysisPanel({
             {t('pages.cv.generate.analysis.keywords')}
           </h3>
           <div className="mt-2">
-            <TagList items={analysis.keywords} variant="accent" />
+            <TagList items={analysis.keywords} variant="keyword" />
           </div>
         </div>
 
@@ -77,7 +89,7 @@ export default function JobDescriptionAnalysisPanel({
             {t('pages.cv.generate.analysis.requiredSkills')}
           </h3>
           <div className="mt-2">
-            <TagList items={analysis.requiredSkills} variant="muted" />
+            <TagList items={analysis.requiredSkills} variant="required" />
           </div>
         </div>
 
@@ -87,11 +99,21 @@ export default function JobDescriptionAnalysisPanel({
               {t('pages.cv.generate.analysis.preferredSkills')}
             </h3>
             <div className="mt-2">
-              <TagList items={analysis.preferredSkills} variant="muted" />
+              <TagList items={analysis.preferredSkills} variant="preferred" />
             </div>
           </div>
         )}
       </div>
+    </>
+  )
+
+  if (bare) {
+    return <div className="space-y-4">{content}</div>
+  }
+
+  return (
+    <section className="space-y-4 rounded-card border border-border bg-surface-muted p-4">
+      {content}
     </section>
   )
 }

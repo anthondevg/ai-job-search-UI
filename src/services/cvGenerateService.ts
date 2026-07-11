@@ -6,6 +6,12 @@ import type { CVProfile } from '../types/cvProfile'
 import type { ProfileCompatibility } from '../types/compatibility'
 import type { CvOutputLanguage } from '../types/cvOutputLanguage'
 import type { JobDescriptionAnalysis } from '../types/jobDescription'
+import { DEV_MOCK_GENERATE } from '../config/devFlags'
+import {
+  DEV_MOCK_ANALYZE_RESPONSE,
+  DEV_MOCK_TAILOR_RESULT,
+  devMockDelay,
+} from '../mocks/generateDevMocks'
 import { apiFetch, parseApiError } from '../utils/apiClient'
 
 type ApiError = { error: string }
@@ -17,6 +23,14 @@ export async function analyzeJobDescription(
   analysis: JobDescriptionAnalysis
   compatibility: ProfileCompatibility | null
 }> {
+  if (DEV_MOCK_GENERATE) {
+    await devMockDelay()
+    return {
+      analysis: DEV_MOCK_ANALYZE_RESPONSE.analysis,
+      compatibility: DEV_MOCK_ANALYZE_RESPONSE.compatibility,
+    }
+  }
+
   const response = await apiFetch('/api/cv/analyze-job', {
     method: 'POST',
     body: JSON.stringify({
@@ -44,6 +58,11 @@ export async function tailorCv(
   analysis: JobDescriptionAnalysis,
   outputLanguage: CvOutputLanguage,
 ): Promise<TailorCvResponse['result']> {
+  if (DEV_MOCK_GENERATE) {
+    await devMockDelay()
+    return DEV_MOCK_TAILOR_RESULT
+  }
+
   const response = await apiFetch('/api/cv/tailor', {
     method: 'POST',
     body: JSON.stringify({
