@@ -1,0 +1,62 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Base surfaces — soft dark grays, no pure black */
+  --color-surface: #11141b;
+  --color-surface-raised: #181d27;
+  --color-surface-muted: #1f2533;
+  --color-surface-tab: #262d3d;
+
+  /* Text — reduced contrast for eye comfort */
+  --color-heading: #dde3ef;
+  --color-body: #b8c0d0;
+  --color-muted: #7a8499;
+
+  /* Borders */
+  --color-border: #2a3142;
+  --color-border-muted: #232936;
+
+  /* Accent — softened indigo */
+  --color-accent: #7b8cff;
+  --color-accent-hover: #95a0ff;
+  --color-accent-subtle: #2a3050;
+
+  /* Status */
+  --color-success: #6ebf9d;
+  --color-success-subtle: #1a2e28;
+  --color-danger: #e88a8a;
+  --color-danger-subtle: #2e1c1c;
+  --color-danger-border: #4a2f2f;
+
+  /* Sidebar */
+  --color-sidebar: #0d1017;
+  --color-sidebar-hover: #171c28;
+  --color-sidebar-active: #222a3c;
+  --color-sidebar-border: #1e2433;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-surface);
+  color: var(--color-body);
+}
+
+#root {
+  min-height: 100svh;
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  color: var(--color-heading);
+}

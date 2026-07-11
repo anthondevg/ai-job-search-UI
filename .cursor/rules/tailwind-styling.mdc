@@ -1,0 +1,38 @@
+---
+description: Prefer Tailwind CSS for styling; use custom CSS only when necessary
+alwaysApply: true
+---
+
+# Styling with Tailwind CSS
+
+Prefer Tailwind utility classes for layout, spacing, colors, typography, and responsive behavior.
+
+## Default approach
+
+- Style components with `className` and Tailwind utilities
+- Reuse design tokens from `src/index.css` (`@theme`) instead of hardcoded values
+- Use responsive prefixes (`sm:`, `lg:`) for breakpoints
+
+```tsx
+// ✅ GOOD
+<div className="flex flex-col gap-4 rounded-xl bg-white p-4 sm:p-6 lg:p-8">
+
+// ❌ AVOID — unnecessary CSS file for simple layout
+<div className="page-container">
+```
+
+## When to use custom CSS
+
+Use `src/index.css` or a component-scoped CSS file only when styling is genuinely complex, for example:
+
+- Global theme tokens, base resets, or font setup
+- Animations or transitions that are hard to express cleanly with utilities
+- Pseudo-elements, complex selectors, or third-party overrides
+
+Do not create new `.css` files for one-off spacing, flexbox, or color tweaks that Tailwind already covers.
+
+## Avoid
+
+- Inline `style={{ ... }}` for values Tailwind can handle
+- Mixing Tailwind utilities with redundant custom classes for the same concern
+- Large blocks of custom CSS that duplicate utility patterns

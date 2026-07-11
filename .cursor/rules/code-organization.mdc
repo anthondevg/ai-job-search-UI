@@ -1,0 +1,59 @@
+---
+description: Keep components lean; extract complex logic into utils, services, and hooks
+alwaysApply: true
+---
+
+# Component & Code Organization
+
+Keep components focused on rendering and local UI state. Avoid bloated files.
+
+## When to extract logic
+
+Move logic out of a component when it:
+
+- Has multiple responsibilities (fetching, transforming, formatting, and rendering)
+- Exceeds ~150 lines or is hard to scan at a glance
+- Contains reusable pure functions (formatters, validators, mappers)
+- Talks to APIs or external systems
+
+## Where to put extracted code
+
+| Type | Location | Example |
+|------|----------|---------|
+| Pure helpers | `src/utils/` | `formatDate.ts`, `cn.ts` |
+| API / async work | `src/services/` | `cvService.ts`, `jobScraperService.ts` |
+| Reusable stateful logic | `src/hooks/` | `useJobList.ts` |
+| Shared UI | `src/components/` | `Button.tsx`, `Sidebar.tsx` |
+| Route views | `src/pages/` | `GenerateCV.tsx` |
+
+## Code splitting
+
+- Use React Router lazy loading for pages when the app grows:
+
+```tsx
+const GenerateCV = lazy(() => import('./pages/GenerateCV'))
+```
+
+- Prefer named exports in utils/services for tree-shaking
+- Do not import heavy service modules into lightweight UI components unless needed
+
+## Component guidelines
+
+- One primary concern per component
+- Co-locate small, component-specific helpers only if they are not reused elsewhere
+- Pages compose components; they should not contain deep business logic
+
+```tsx
+// ✅ GOOD — page stays thin
+export default function GenerateCV() {
+  const { data, isLoading } = useCvGenerator()
+  return <CvForm data={data} isLoading={isLoading} />
+}
+
+// ❌ AVOID — API calls, transforms, and JSX all in one file
+export default function GenerateCV() {
+  const [data, setData] = useState(null)
+  useEffect(() => { fetch('/api/cv').then(...) }, [])
+  // 200 lines of logic + markup...
+}
+```
