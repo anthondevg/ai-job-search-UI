@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from '../../hooks/useTranslation'
 import type { SavedCvRecord } from '../../types/cvProfile'
-import CvLibrary, { CvDocumentIcon } from './CvLibrary'
+import CvLibrary from './CvLibrary'
+import CvDocumentIcon from './CvDocumentIcon'
 
 const COLLAPSED_STORAGE_KEY = 'cv-library-sidebar-collapsed'
 

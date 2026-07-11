@@ -4,6 +4,7 @@ import { useCvGeneration } from '../../hooks/useCvGeneration'
 import CvGenerateActionBar from './CvGenerateActionBar'
 import CvGenerateResultsPanel from './CvGenerateResultsPanel'
 import CvGenerateStepper from './CvGenerateStepper'
+import CvRecordCard from './CvRecordCard'
 import JobDescriptionInput from './JobDescriptionInput'
 
 export default function CvGenerateTab() {
@@ -35,15 +36,12 @@ export default function CvGenerateTab() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start">
         <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
           {activeRecord ? (
-            <div className="match-rail match-rail-accent match-notch match-frame-emphasis rounded-card bg-surface-raised px-4 py-3 shadow-sm">
-              <p className="text-xs font-medium uppercase tracking-widest text-accent">
-                {t('pages.cv.generate.activeCv')}
-              </p>
-              <p className="mt-1 text-sm font-semibold text-heading">
-                {activeRecord.profile.personalInfo.name || activeRecord.fileName}
-              </p>
-              <p className="font-mono text-xs text-body">{activeRecord.fileName}</p>
-            </div>
+            <CvRecordCard
+              record={activeRecord}
+              isActive
+              readOnly
+              badgeLabel={t('pages.cv.library.active')}
+            />
           ) : (
             <div className="match-frame rounded-card border border-dashed border-border bg-surface-muted/40 px-4 py-3 text-sm text-muted">
               {t('pages.cv.generate.noActiveCv')}
