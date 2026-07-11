@@ -1,6 +1,6 @@
 # AI Job Search UI
 
-A web app for AI-assisted job search workflows. Upload your CV as a structured profile, use it as the **source of truth** for tailoring applications, and paste job descriptions to analyze keywords and required skills. A job scraper marketplace is planned for browsing and managing job sources.
+A web app for AI-assisted job search workflows. Upload your CV as a structured profile, use it as the **source of truth** for tailoring applications, analyze job descriptions for keywords and skills, check profile compatibility (including location eligibility), and export a tailored CV as PDF.
 
 ## Features
 
@@ -11,7 +11,7 @@ Two Chrome-style tabs:
 | Tab | Status | Description |
 | --- | --- | --- |
 | **Import** | Ready | Upload a PDF resume, parse it with Google Gemini, preview the extracted profile, and manage a library of saved CVs. |
-| **Generate** | In progress | Shows the active CV and a job-description textarea. Keyword/skill analysis and tailored CV generation are next. |
+| **Generate** | Ready | Analyze job postings, score profile fit, generate a tailored CV, preview it, and download a PDF. |
 
 **Import tab**
 
@@ -25,9 +25,14 @@ Two Chrome-style tabs:
 **Generate tab**
 
 - Active CV indicator (or prompt to import one first)
-- Job description textarea for postings from LinkedIn, Indeed, InfoJobs, company careers pages, etc.
-- Text persisted in `localStorage` (up to 50,000 characters)
-- Store and types prepared for upcoming keyword/skill analysis
+- Job description textarea for postings from LinkedIn, Indeed, InfoJobs, company careers pages, etc. (50–50,000 characters, persisted in `localStorage`)
+- **Output language** selector: English (default) or Spanish — affects summary, bullets, and PDF section headers; skill/tech names stay unchanged
+- **Analyze** — extracts keywords, required/preferred skills, and (when an active CV is set) profile compatibility:
+  - Animated score ring with skills match vs final score (location penalty applied)
+  - Strengths, gaps, and location eligibility (e.g. remote policy, country restrictions)
+- **Generate tailored CV** — rewrites and reorders content from the source profile only; no invented skills or experience
+- Tailored CV preview with adaptation notes (matched keywords/skills, gaps)
+- PDF viewer and download via `@react-pdf/renderer`
 
 ### Job Scraper Market (`/job-scraper-market`)
 
@@ -44,8 +49,8 @@ Placeholder page for browsing and managing job scraping sources (coming soon).
 
 | Layer | Stack |
 | --- | --- |
-| Frontend | React 19, TypeScript, Vite 8, Tailwind CSS 4, React Router 7, Zustand |
-| Backend | Hono (Node), Google Gemini (`gemini-3.5-flash`), Supabase (PostgreSQL) |
+| Frontend | React 19, TypeScript, Vite 8, Tailwind CSS 4, React Router 7, Zustand, `@react-pdf/renderer` |
+| Backend | Hono (Node), Google Gemini (`gemini-3.1-flash-lite` default), Supabase (PostgreSQL) |
 | Tooling | Oxlint, concurrently, wait-on |
 
 ## Architecture
@@ -53,13 +58,16 @@ Placeholder page for browsing and managing job scraping sources (coming soon).
 ```
 Browser (React)
   ├── Zustand stores
-  │     ├── cvStore          — CV records, active CV, upload state
-  │     └── jobDescriptionStore — job text + future analysis
-  ├── localStorage           — session ID, active CV ID, job description, language
+  │     ├── cvStore              — CV records, active CV, upload state
+  │     ├── jobDescriptionStore  — job text (localStorage)
+  │     └── generateStore        — analysis, compatibility, tailored CV, loading/errors
+  ├── localStorage               — session ID, active CV ID, job description, output language
   └── /api/* (Vite proxy) ──► Hono API (:3001)
-                                  ├── Gemini  — PDF → structured JSON
+                                  ├── Gemini   — parse, analyze, compatibility, tailor
                                   └── Supabase — cv_profiles table
 ```
+
+**Anti-hallucination:** The parsed `CVProfile` is the source of truth. Tailored CV generation only reorders and rewrites existing content — it does not add skills, roles, or experience that are not in the profile.
 
 **Session model (MVP):** Each browser gets a UUID stored in `localStorage`. All CV CRUD is scoped to that `session_id`. There is no user authentication yet.
 
@@ -93,11 +101,34 @@ cp server/.env.example server/.env
 
 | Variable | Description |
 | --- | --- |
-| `GEMINI_API_KEY` | Google Gemini API key for CV parsing |
+| `GEMINI_API_KEY` | Google Gemini API key for all LLM features |
+| `GEMINI_MODEL` | Optional. Model ID override (default `gemini-3.1-flash-lite`). See [Gemini models](#gemini-models--quota) below. |
 | `SUPABASE_URL` | Supabase project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Service role secret** — server-side only; never expose to the frontend |
 | `PORT` | API port (default `3001`) |
 | `FRONTEND_URL` | Frontend origin for CORS (default `http://localhost:5173`) |
+
+### Gemini models & quota
+
+New Gemini API accounts **cannot** use legacy models such as `gemini-2.5-flash` or `gemini-2.0-flash` (they return 404).
+
+| Model | Notes |
+| --- | --- |
+| `gemini-3.1-flash-lite` | **Default** — best choice for free tier volume |
+| `gemini-3.5-flash` | Automatic fallback if the primary model is unavailable; very low free-tier quota (~20 requests/day) |
+
+The server retries on quota errors (429) and falls back to the next model on 404. Set `GEMINI_MODEL` in `server/.env` to override the default.
+
+**API usage per action:**
+
+| Action | Gemini calls |
+| --- | --- |
+| Import PDF | 1 |
+| Analyze job (with active CV) | 2 (job analysis + compatibility) |
+| Analyze job (no CV) | 1 |
+| Generate tailored CV | 1 |
+
+On the free tier, quota can be consumed quickly — especially when analyzing with an active CV.
 
 ### Run locally
 
@@ -133,32 +164,56 @@ npm run preview      # preview production build
 | `GET` | `/api/cv` | List saved CV profiles for the session |
 | `POST` | `/api/cv/parse` | Upload a PDF (`multipart/form-data`, field `file`) and parse + save |
 | `DELETE` | `/api/cv/:id` | Delete a saved CV profile |
+| `POST` | `/api/cv/analyze-job` | Analyze job description; optional `sourceProfile` for compatibility scoring |
+| `POST` | `/api/cv/tailor` | Generate tailored CV from `sourceProfile`, `jobDescription`, `analysis`, and optional `outputLanguage` (`en` \| `es`) |
 
 All `/api/cv` routes require header `X-Session-Id: <uuid-v4>`.
+
+**`POST /api/cv/analyze-job` body:**
+
+```json
+{
+  "jobDescription": "…",
+  "sourceProfile": { }
+}
+```
+
+`sourceProfile` is optional. When omitted, only job analysis is returned.
+
+**`POST /api/cv/tailor` body:**
+
+```json
+{
+  "sourceProfile": { },
+  "jobDescription": "…",
+  "analysis": { },
+  "outputLanguage": "en"
+}
+```
 
 ## Project structure
 
 ```
 ├── src/                          # React frontend
 │   ├── components/
-│   │   ├── cv/                   # CV tabs, upload, library, preview, job description
+│   │   ├── cv/                   # Import/Generate tabs, PDF, compatibility, previews
 │   │   ├── Layout.tsx
 │   │   ├── Sidebar.tsx
 │   │   └── LanguageSwitcher.tsx
-│   ├── hooks/                    # useCvProfiles, useJobDescription, useTranslation
+│   ├── hooks/                    # useCvProfiles, useCvGeneration, useJobDescription, …
 │   ├── i18n/                     # en/es translations
 │   ├── pages/                    # CV, JobScraperMarket
-│   ├── services/                 # API client (cvProfileService)
-│   ├── stores/                   # Zustand (cvStore, jobDescriptionStore)
-│   ├── types/                    # CV profile & job description types
-│   └── utils/                    # session, PDF validation, API client
+│   ├── services/                 # cvProfileService, cvGenerateService
+│   ├── stores/                   # cvStore, jobDescriptionStore, generateStore
+│   ├── types/                    # CV profile, job description, tailored CV, compatibility
+│   └── utils/                    # session, PDF validation, downloadCvPdf, cvPdfLabels
 ├── server/                       # Hono API
 │   └── src/
-│       ├── routes/               # cv routes
+│       ├── routes/               # cv + generate routes
 │       ├── services/             # Gemini, Supabase, CV persistence
 │       ├── middleware/           # session validation
-│       ├── schemas/              # Gemini JSON schema
-│       ├── prompts/              # LLM prompts (anti-hallucination rules)
+│       ├── schemas/              # Gemini JSON schemas
+│       ├── prompts/              # parse, analyze, compatibility, tailor prompts
 │       └── validators/
 ├── supabase/migrations/          # SQL schema
 └── .cursor/rules/                # Cursor agent conventions
@@ -177,8 +232,12 @@ All `/api/cv` routes require header `X-Session-Id: <uuid-v4>`.
 
 ## Roadmap
 
-- [ ] Analyze job descriptions (keywords, required skills) via Gemini
-- [ ] Generate tailored CV from active profile + job description (no hallucination)
+- [x] Analyze job descriptions (keywords, required skills) via Gemini
+- [x] Profile compatibility scoring (skills + location eligibility)
+- [x] Generate tailored CV from active profile + job description (no hallucination)
+- [x] PDF export for tailored CV
+- [x] Output language selection (English / Spanish)
+- [ ] Combine analyze + compatibility into a single Gemini call (reduce quota usage)
 - [ ] Job Scraper Market
 - [ ] Optional: migrate from `session_id` to Supabase Auth / `user_id`
 
@@ -209,9 +268,9 @@ These are not blockers for open-sourcing the code, but matter if you **deploy** 
 
 - **No user authentication** — isolation is a client-generated session UUID, not a login.
 - **RLS disabled** on `cv_profiles` — access control is enforced in the API (`session_id` filter), not at the database row level.
-- **No rate limiting** on upload/parse endpoints — add before exposing to untrusted traffic.
+- **No rate limiting** on upload/parse/generate endpoints — add before exposing to untrusted traffic.
 - **CORS** is restricted to `FRONTEND_URL` — set this correctly in production.
-- **CV PDFs** are sent to Google Gemini — review [Google’s data policies](https://ai.google.dev/gemini-api/terms) for your use case.
+- **CV PDFs and job descriptions** are sent to Google Gemini — review [Google’s data policies](https://ai.google.dev/gemini-api/terms) for your use case.
 
 Self-hosting is the expected model: each user runs their own API with their own `.env` and Supabase project.
 
