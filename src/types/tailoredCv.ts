@@ -1,4 +1,5 @@
 import type { CVProfile } from './cvProfile'
+import type { ProfileCompatibility } from './compatibility'
 import type { JobDescriptionAnalysis } from './jobDescription'
 
 /** Same shape as CVProfile — tailored content only, no invented facts. */
@@ -21,6 +22,7 @@ export type GenerateCvStatus = 'idle' | 'analyzing' | 'generating' | 'ready' | '
 
 export type AnalyzeJobResponse = {
   analysis: JobDescriptionAnalysis
+  compatibility: ProfileCompatibility | null
 }
 
 export type TailorCvResponse = {

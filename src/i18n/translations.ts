@@ -86,6 +86,38 @@ export const translations: Record<Language, Translations> = {
             clear: 'Clear',
             characterCountLabel: 'Characters',
           },
+          outputLanguage: {
+            label: 'CV output language',
+            hint: 'Summary and experience bullets will be written in this language. Skills and tech names stay as in your source CV.',
+            en: 'English',
+            es: 'Spanish',
+          },
+          compatibility: {
+            title: 'Profile fit',
+            match: 'Match',
+            skillsScore: 'Skills match',
+            strengths: 'Strengths',
+            gaps: 'Gaps',
+            level: {
+              strong: 'Strong fit for this role',
+              good: 'Good fit with some gaps',
+              partial: 'Partial fit — consider tailoring your CV',
+              weak: 'Weak fit — major requirements missing',
+            },
+            location: {
+              title: 'Location & remote eligibility',
+              candidate: 'Your location',
+              job: 'Job location',
+              remotePolicy: 'Remote / work policy',
+              eligibility: {
+                eligible: 'You can likely apply from your location',
+                likely_eligible: 'Good chance — verify remote policy',
+                unclear: 'Location requirements unclear — check before applying',
+                unlikely: 'Low chance — geo or work-auth restrictions apply',
+                ineligible: 'Very unlikely — location or authorization blocks you',
+              },
+            },
+          },
           analysis: {
             title: 'Job analysis',
             description: 'Keywords and skills extracted from the posting.',
@@ -109,6 +141,21 @@ export const translations: Record<Language, Translations> = {
             missingFromCv: 'Skills in the job but not in your CV',
             missingFromCvHint:
               'These were not added to your CV — only real experience from your source profile is used.',
+          },
+          pdf: {
+            previewTitle: 'CV document',
+            previewDescription:
+              'ATS-friendly PDF preview. Download and submit to job portals.',
+            download: 'Download PDF',
+            downloading: 'Preparing PDF...',
+            downloadFailed: 'Failed to generate the PDF. Please try again.',
+            loadingPreview: 'Loading PDF preview...',
+            summary: 'Professional Summary',
+            skills: 'Skills',
+            experience: 'Experience',
+            education: 'Education',
+            languages: 'Languages',
+            certifications: 'Certifications',
           },
           errors: {
             jobDescriptionTooShort:
@@ -212,6 +259,38 @@ export const translations: Record<Language, Translations> = {
             clear: 'Limpiar',
             characterCountLabel: 'Caracteres',
           },
+          outputLanguage: {
+            label: 'Idioma del CV generado',
+            hint: 'El resumen y los bullets de experiencia se escribirán en este idioma. Skills y tecnologías se mantienen como en tu CV fuente.',
+            en: 'Inglés',
+            es: 'Español',
+          },
+          compatibility: {
+            title: 'Compatibilidad con el puesto',
+            match: 'Match',
+            skillsScore: 'Match de skills',
+            strengths: 'Fortalezas',
+            gaps: 'Brechas',
+            level: {
+              strong: 'Encaje fuerte para este rol',
+              good: 'Buen encaje con algunas brechas',
+              partial: 'Encaje parcial — conviene adaptar el CV',
+              weak: 'Encaje débil — faltan requisitos importantes',
+            },
+            location: {
+              title: 'Ubicación y elegibilidad remota',
+              candidate: 'Tu ubicación',
+              job: 'Ubicación del empleo',
+              remotePolicy: 'Política remota / trabajo',
+              eligibility: {
+                eligible: 'Puedes aplicar desde tu ubicación',
+                likely_eligible: 'Buenas chances — confirma la política remota',
+                unclear: 'Requisitos de ubicación poco claros — verifica antes de aplicar',
+                unlikely: 'Pocas chances — hay restricciones geo o de autorización',
+                ineligible: 'Muy improbable — ubicación o autorización te bloquea',
+              },
+            },
+          },
           analysis: {
             title: 'Análisis del puesto',
             description: 'Keywords y skills extraídas del anuncio.',
@@ -235,6 +314,21 @@ export const translations: Record<Language, Translations> = {
             missingFromCv: 'Skills del puesto que no están en tu CV',
             missingFromCvHint:
               'No se añadieron a tu CV — solo se usa experiencia real de tu perfil fuente.',
+          },
+          pdf: {
+            previewTitle: 'Documento CV',
+            previewDescription:
+              'Vista previa PDF optimizada para ATS. Descárgalo y envíalo a portales de empleo.',
+            download: 'Descargar PDF',
+            downloading: 'Preparando PDF...',
+            downloadFailed: 'No se pudo generar el PDF. Inténtalo de nuevo.',
+            loadingPreview: 'Cargando vista previa del PDF...',
+            summary: 'Resumen profesional',
+            skills: 'Skills',
+            experience: 'Experiencia',
+            education: 'Educación',
+            languages: 'Idiomas',
+            certifications: 'Certificaciones',
           },
           errors: {
             jobDescriptionTooShort:

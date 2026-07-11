@@ -1,16 +1,22 @@
+import { lazy, Suspense } from 'react'
 import { useTranslation } from '../../hooks/useTranslation'
+import type { CvOutputLanguage } from '../../types/cvOutputLanguage'
 import type { TailoredCvMeta } from '../../types/tailoredCv'
 import CvProfilePreview from './CvProfilePreview'
 import type { CVProfile } from '../../types/cvProfile'
 
+const CvPdfPanel = lazy(() => import('./CvPdfPanel'))
+
 type TailoredCvPreviewProps = {
   profile: CVProfile
   meta: TailoredCvMeta
+  outputLanguage: CvOutputLanguage
 }
 
 export default function TailoredCvPreview({
   profile,
   meta,
+  outputLanguage,
 }: TailoredCvPreviewProps) {
   const { t } = useTranslation()
 
@@ -95,6 +101,20 @@ export default function TailoredCvPreview({
           </div>
         </section>
       )}
+
+      <Suspense
+        fallback={
+          <div className="rounded-xl border border-border bg-surface-muted p-4 text-sm text-muted">
+            {t('pages.cv.generate.pdf.loadingPreview')}
+          </div>
+        }
+      >
+        <CvPdfPanel
+          profile={profile}
+          roleTitle={meta.roleTitle}
+          outputLanguage={outputLanguage}
+        />
+      </Suspense>
     </div>
   )
 }

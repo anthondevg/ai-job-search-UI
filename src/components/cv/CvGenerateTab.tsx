@@ -2,14 +2,17 @@ import { useTranslation } from '../../hooks/useTranslation'
 import { useCvGeneration } from '../../hooks/useCvGeneration'
 import { useActiveCvRecord } from '../../stores/cvStore'
 import CvGenerateActions from './CvGenerateActions'
+import CvOutputLanguageSelect from './CvOutputLanguageSelect'
 import JobDescriptionAnalysisPanel from './JobDescriptionAnalysisPanel'
 import JobDescriptionInput from './JobDescriptionInput'
+import ProfileCompatibilityCard from './ProfileCompatibilityCard'
 import TailoredCvPreview from './TailoredCvPreview'
 
 export default function CvGenerateTab() {
   const { t } = useTranslation()
   const activeRecord = useActiveCvRecord()
-  const { analysis, tailoredResult, jdError, generateError } = useCvGeneration()
+  const { analysis, compatibility, tailoredResult, jdError, generateError, outputLanguage } =
+    useCvGeneration()
 
   return (
     <div className="space-y-6">
@@ -30,6 +33,7 @@ export default function CvGenerateTab() {
       )}
 
       <JobDescriptionInput />
+      <CvOutputLanguageSelect />
       <CvGenerateActions />
 
       {jdError && (
@@ -44,12 +48,17 @@ export default function CvGenerateTab() {
         </div>
       )}
 
+      {compatibility && (
+        <ProfileCompatibilityCard compatibility={compatibility} />
+      )}
+
       {analysis && <JobDescriptionAnalysisPanel analysis={analysis} />}
 
       {tailoredResult && (
         <TailoredCvPreview
           profile={tailoredResult.profile}
           meta={tailoredResult.meta}
+          outputLanguage={outputLanguage}
         />
       )}
     </div>

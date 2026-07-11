@@ -70,10 +70,18 @@ Copy exactly from sourceProfile. No changes.
 - matchedKeywords: every keyword from jobAnalysis that you successfully reflected in the tailored profile (use the JD term if matchable via source evidence)
 - matchedSkills: every requiredSkill and preferredSkill from jobAnalysis that has matchable evidence in sourceProfile and appears in the tailored profile
 - missingFromCv: requiredSkills and preferredSkills from jobAnalysis with NO matchable evidence in sourceProfile (be thorough — helps the candidate know gaps)
-- adaptationNotes: 3–5 concise bullets, e.g.:
+- adaptationNotes: 3–5 concise bullets in the output language, e.g.:
   - "Prioritized TypeScript and Node.js in skills (both in source)"
   - "Rewrote summary to target Senior Backend Engineer keywords"
   - "Moved API-related bullet to top of current role"
   - "Did not add Docker — not found in source CV"
+
+## Output language
+The input JSON includes outputLanguage: "en" or "es".
+- Write ALL generated prose in that language: summary, experience bullets, adaptationNotes
+- Write meta.missingFromCv and meta.matchedSkills labels using the JD terms (keep original spelling from jobAnalysis)
+- Keep unchanged from source: personalInfo (name, email, phone, location, linkedin, website), company names, institution names, certification titles, and technology/skill names (React, TypeScript, AWS, etc.)
+- Use natural, professional CV tone for the chosen language
+- Default to English if outputLanguage is missing
 
 Return JSON matching the provided schema.`

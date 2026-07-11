@@ -16,17 +16,21 @@ export function useCvGeneration() {
 
   const text = useJobDescriptionStore((state) => state.text)
   const analysis = useJobDescriptionStore((state) => state.analysis)
+  const compatibility = useJobDescriptionStore((state) => state.compatibility)
   const jdStatus = useJobDescriptionStore((state) => state.status)
   const jdError = useJobDescriptionStore((state) => state.error)
 
   const setJdStatus = useJobDescriptionStore((state) => state.setStatus)
   const setAnalysis = useJobDescriptionStore((state) => state.setAnalysis)
+  const setCompatibility = useJobDescriptionStore((state) => state.setCompatibility)
   const setJdError = useJobDescriptionStore((state) => state.setError)
 
   const generateStatus = useGenerateStore((state) => state.status)
+  const outputLanguage = useGenerateStore((state) => state.outputLanguage)
   const tailoredResult = useGenerateStore((state) => state.tailoredResult)
   const generateError = useGenerateStore((state) => state.error)
 
+  const setOutputLanguage = useGenerateStore((state) => state.setOutputLanguage)
   const setGenerateStatus = useGenerateStore((state) => state.setStatus)
   const setTailoredResult = useGenerateStore((state) => state.setTailoredResult)
   const setGenerateError = useGenerateStore((state) => state.setError)
@@ -51,8 +55,12 @@ export function useCvGeneration() {
     setGenerateError(null)
 
     try {
-      const nextAnalysis = await analyzeJobDescriptionApi(text)
-      setAnalysis(nextAnalysis)
+      const result = await analyzeJobDescriptionApi(
+        text,
+        activeRecord?.profile,
+      )
+      setAnalysis(result.analysis)
+      setCompatibility(result.compatibility)
     } catch (error) {
       setJdError(
         error instanceof Error
@@ -61,8 +69,10 @@ export function useCvGeneration() {
       )
     }
   }, [
+    activeRecord?.profile,
     hasText,
     setAnalysis,
+    setCompatibility,
     setJdError,
     setJdStatus,
     setGenerateError,
@@ -94,6 +104,7 @@ export function useCvGeneration() {
         activeRecord.profile,
         text,
         analysis,
+        outputLanguage,
       )
       setTailoredResult(result)
     } catch (error) {
@@ -107,6 +118,7 @@ export function useCvGeneration() {
     activeRecord,
     analysis,
     hasText,
+    outputLanguage,
     setGenerateError,
     setGenerateStatus,
     setTailoredResult,
@@ -121,6 +133,7 @@ export function useCvGeneration() {
     activeRecord,
     text,
     analysis,
+    compatibility,
     tailoredResult,
     jdError,
     generateError,
@@ -128,6 +141,8 @@ export function useCvGeneration() {
     canGenerate,
     isAnalyzing,
     isGenerating,
+    outputLanguage,
+    setOutputLanguage,
     analyzeJobDescription,
     generateTailoredCv,
   }

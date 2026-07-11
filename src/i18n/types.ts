@@ -90,13 +90,67 @@ export type CvGenerateErrorsTranslations = {
   generateFailed: string
 }
 
+export type CvGeneratePdfTranslations = {
+  previewTitle: string
+  previewDescription: string
+  download: string
+  downloading: string
+  downloadFailed: string
+  loadingPreview: string
+  summary: string
+  skills: string
+  experience: string
+  education: string
+  languages: string
+  certifications: string
+}
+
+export type CvGenerateOutputLanguageTranslations = {
+  label: string
+  hint: string
+  en: string
+  es: string
+}
+
+export type CvGenerateCompatibilityLocationTranslations = {
+  title: string
+  candidate: string
+  job: string
+  remotePolicy: string
+  eligibility: {
+    eligible: string
+    likely_eligible: string
+    unclear: string
+    unlikely: string
+    ineligible: string
+  }
+}
+
+export type CvGenerateCompatibilityTranslations = {
+  title: string
+  match: string
+  skillsScore: string
+  strengths: string
+  gaps: string
+  level: {
+    strong: string
+    good: string
+    partial: string
+    weak: string
+  }
+  location: CvGenerateCompatibilityLocationTranslations
+}
+
 export type CvGenerateTranslations = {
   activeCv: string
   noActiveCv: string
   jobDescription: CvJobDescriptionTranslations
+  outputLanguage: CvGenerateOutputLanguageTranslations
+  compatibility: CvGenerateCompatibilityTranslations
   analysis: CvGenerateAnalysisTranslations
   actions: CvGenerateActionsTranslations
   tailored: CvGenerateTailoredTranslations
+  pdf: CvGeneratePdfTranslations
   errors: CvGenerateErrorsTranslations
 }
 
@@ -154,10 +208,16 @@ export type TranslationKey =
   | `pages.cv.library.${keyof CvLibraryTranslations}`
   | `pages.cv.library.errors.${keyof CvLibraryTranslations['errors']}`
   | `pages.cv.preview.${keyof CvPreviewTranslations}`
-  | `pages.cv.generate.${Exclude<keyof CvGenerateTranslations, 'jobDescription' | 'analysis' | 'actions' | 'tailored' | 'errors'>}`
+  | `pages.cv.generate.${Exclude<keyof CvGenerateTranslations, 'jobDescription' | 'outputLanguage' | 'compatibility' | 'analysis' | 'actions' | 'tailored' | 'pdf' | 'errors'>}`
   | `pages.cv.generate.jobDescription.${keyof CvJobDescriptionTranslations}`
+  | `pages.cv.generate.outputLanguage.${keyof CvGenerateOutputLanguageTranslations}`
+  | `pages.cv.generate.compatibility.${Exclude<keyof CvGenerateCompatibilityTranslations, 'level' | 'location'>}`
+  | `pages.cv.generate.compatibility.level.${keyof CvGenerateCompatibilityTranslations['level']}`
+  | `pages.cv.generate.compatibility.location.${Exclude<keyof CvGenerateCompatibilityLocationTranslations, 'eligibility'>}`
+  | `pages.cv.generate.compatibility.location.eligibility.${keyof CvGenerateCompatibilityLocationTranslations['eligibility']}`
   | `pages.cv.generate.analysis.${keyof CvGenerateAnalysisTranslations}`
   | `pages.cv.generate.actions.${keyof CvGenerateActionsTranslations}`
   | `pages.cv.generate.tailored.${keyof CvGenerateTailoredTranslations}`
+  | `pages.cv.generate.pdf.${keyof CvGeneratePdfTranslations}`
   | `pages.cv.generate.errors.${keyof CvGenerateErrorsTranslations}`
   | `pages.jobScraperMarket.${keyof Translations['pages']['jobScraperMarket']}`

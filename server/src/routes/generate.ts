@@ -2,9 +2,11 @@ import { Hono } from 'hono'
 import { sessionMiddleware, type SessionVariables } from '../middleware/session.js'
 import {
   analyzeJobDescription,
+  calculateProfileCompatibility,
   generateTailoredCv,
 } from '../services/geminiService.js'
 import type { CVProfile } from '../types/cvProfile.js'
+import { parseCvOutputLanguage } from '../types/cvOutputLanguage.js'
 import type { JobDescriptionAnalysis } from '../types/jobDescription.js'
 import { validateCvProfile } from '../validators/validateCvProfile.js'
 import { validateJobDescriptionAnalysis } from '../validators/validateGeneration.js'
@@ -15,7 +17,10 @@ generateRoutes.use('*', sessionMiddleware)
 
 generateRoutes.post('/analyze-job', async (c) => {
   try {
-    const body = await c.req.json<{ jobDescription?: string }>()
+    const body = await c.req.json<{
+      jobDescription?: string
+      sourceProfile?: CVProfile
+    }>()
     const jobDescription = body.jobDescription
 
     if (typeof jobDescription !== 'string') {
@@ -23,7 +28,18 @@ generateRoutes.post('/analyze-job', async (c) => {
     }
 
     const analysis = await analyzeJobDescription(jobDescription)
-    return c.json({ analysis })
+
+    let compatibility = null
+    if (body.sourceProfile) {
+      const sourceProfile = validateCvProfile(body.sourceProfile)
+      compatibility = await calculateProfileCompatibility(
+        sourceProfile,
+        jobDescription,
+        analysis,
+      )
+    }
+
+    return c.json({ analysis, compatibility })
   } catch (error) {
     console.error('Job description analyze error:', error)
 
@@ -48,6 +64,7 @@ generateRoutes.post('/tailor', async (c) => {
       sourceProfile?: CVProfile
       jobDescription?: string
       analysis?: JobDescriptionAnalysis
+      outputLanguage?: string
     }>()
 
     if (!body.sourceProfile) {
@@ -65,10 +82,13 @@ generateRoutes.post('/tailor', async (c) => {
     const sourceProfile = validateCvProfile(body.sourceProfile)
     const analysis = validateJobDescriptionAnalysis(body.analysis)
 
+    const outputLanguage = parseCvOutputLanguage(body.outputLanguage)
+
     const result = await generateTailoredCv(
       sourceProfile,
       body.jobDescription,
       analysis,
+      outputLanguage,
     )
 
     return c.json({ result })

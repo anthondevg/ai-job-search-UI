@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { ProfileCompatibility } from '../types/compatibility'
 import type {
   JobDescriptionAnalysis,
   JobDescriptionStatus,
@@ -11,6 +12,7 @@ type JobDescriptionState = {
   text: string
   status: JobDescriptionStatus
   analysis: JobDescriptionAnalysis | null
+  compatibility: ProfileCompatibility | null
   error: string | null
 }
 
@@ -19,6 +21,7 @@ type JobDescriptionActions = {
   clearText: () => void
   setStatus: (status: JobDescriptionStatus) => void
   setAnalysis: (analysis: JobDescriptionAnalysis | null) => void
+  setCompatibility: (compatibility: ProfileCompatibility | null) => void
   setError: (error: string | null) => void
   resetAnalysis: () => void
 }
@@ -41,18 +44,19 @@ export const useJobDescriptionStore = create<JobDescriptionStore>()((set) => ({
   text: readPersistedText(),
   status: 'idle',
   analysis: null,
+  compatibility: null,
   error: null,
 
   setText: (text) => {
     persistText(text)
     useGenerateStore.getState().reset()
-    set({ text, status: 'idle', analysis: null, error: null })
+    set({ text, status: 'idle', analysis: null, compatibility: null, error: null })
   },
 
   clearText: () => {
     persistText('')
     useGenerateStore.getState().reset()
-    set({ text: '', status: 'idle', analysis: null, error: null })
+    set({ text: '', status: 'idle', analysis: null, compatibility: null, error: null })
   },
 
   setStatus: (status) => set({ status }),
@@ -60,7 +64,10 @@ export const useJobDescriptionStore = create<JobDescriptionStore>()((set) => ({
   setAnalysis: (analysis) =>
     set({ analysis, status: analysis ? 'ready' : 'idle', error: null }),
 
+  setCompatibility: (compatibility) => set({ compatibility }),
+
   setError: (error) => set({ error, status: error ? 'error' : 'idle' }),
 
-  resetAnalysis: () => set({ analysis: null, status: 'idle', error: null }),
+  resetAnalysis: () =>
+    set({ analysis: null, compatibility: null, status: 'idle', error: null }),
 }))
