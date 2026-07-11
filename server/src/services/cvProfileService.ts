@@ -82,6 +82,32 @@ export async function listCvProfiles(sessionId: string): Promise<SavedCvRecord[]
   return (data as CvProfileRow[]).map(mapRow)
 }
 
+export async function updateCvProfile(
+  sessionId: string,
+  id: string,
+  profile: CVProfile,
+): Promise<SavedCvRecord> {
+  const supabase = getSupabaseClient()
+
+  const { data, error } = await supabase
+    .from('cv_profiles')
+    .update({ profile })
+    .eq('id', id)
+    .eq('session_id', sessionId)
+    .select('id, session_id, file_name, profile, created_at')
+    .single()
+
+  if (error) {
+    throw new Error(formatSupabaseError(error))
+  }
+
+  if (!data) {
+    throw new Error('CV profile not found')
+  }
+
+  return mapRow(data as CvProfileRow)
+}
+
 export async function deleteCvProfile(
   sessionId: string,
   id: string,

@@ -5,7 +5,9 @@ import {
   createCvProfile,
   deleteCvProfile,
   listCvProfiles,
+  updateCvProfile,
 } from '../services/cvProfileService.js'
+import { validateCvProfile } from '../validators/validateCvProfile.js'
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
 
@@ -67,6 +69,39 @@ cvRoutes.post('/parse', async (c) => {
 
     if (message.includes('GEMINI_API_KEY')) {
       return c.json({ error: 'Server is missing Gemini API configuration' }, 500)
+    }
+
+    if (message.includes('SUPABASE')) {
+      return c.json({ error: 'Server is missing Supabase configuration' }, 500)
+    }
+
+    return c.json({ error: message }, 500)
+  }
+})
+
+cvRoutes.patch('/:id', async (c) => {
+  try {
+    const body = await c.req.json()
+    const profile = validateCvProfile(body.profile)
+    const record = await updateCvProfile(
+      c.get('sessionId'),
+      c.req.param('id'),
+      profile,
+    )
+
+    return c.json({ record })
+  } catch (error) {
+    console.error('CV update error:', error)
+
+    const message =
+      error instanceof Error ? error.message : 'Failed to update CV profile'
+
+    if (message === 'CV profile not found') {
+      return c.json({ error: message }, 404)
+    }
+
+    if (message.includes('Invalid CV profile') || message.includes('Could not extract')) {
+      return c.json({ error: message }, 400)
     }
 
     if (message.includes('SUPABASE')) {

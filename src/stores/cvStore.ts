@@ -3,8 +3,11 @@ import {
   deleteCvRecord,
   fetchCvRecords,
   parseCvPdf,
+  updateCvRecord,
 } from '../services/cvProfileService'
-import type { CvUploadStatus, SavedCvRecord } from '../types/cvProfile'
+import type { CvUploadStatus, CVProfile, SavedCvRecord } from '../types/cvProfile'
+import { useGenerateStore } from './generateStore'
+import { useJobDescriptionStore } from './jobDescriptionStore'
 
 const ACTIVE_ID_STORAGE_KEY = 'ai-job-search-cv-store-active-id'
 
@@ -14,16 +17,23 @@ type CvState = {
   isLoading: boolean
   status: CvUploadStatus
   error: string | null
+  profileSaveStatus: 'idle' | 'saving' | 'saved' | 'error'
+  profileSaveError: string | null
 }
 
 type CvActions = {
   loadRecords: () => Promise<void>
   selectRecord: (id: string) => void
   uploadPdf: (file: File) => Promise<void>
+  updateProfile: (id: string, profile: CVProfile) => Promise<void>
   removeRecord: (id: string) => Promise<void>
   setDragging: (isDragging: boolean) => void
   setError: (error: string | null) => void
   setStatus: (status: CvUploadStatus) => void
+  setProfileSaveStatus: (
+    status: CvState['profileSaveStatus'],
+    error?: string | null,
+  ) => void
 }
 
 export type CvStore = CvState & CvActions
@@ -66,13 +76,23 @@ export const useCvStore = create<CvStore>()((set, get) => ({
   isLoading: true,
   status: 'idle',
   error: null,
+  profileSaveStatus: 'idle',
+  profileSaveError: null,
 
   setError: (error) => set({ error }),
 
   setStatus: (status) => set({ status }),
 
+  setProfileSaveStatus: (profileSaveStatus, profileSaveError = null) =>
+    set({ profileSaveStatus, profileSaveError }),
+
   selectRecord: (id) => {
-    applyActiveId(set, id, { status: 'success', error: null })
+    applyActiveId(set, id, {
+      status: 'success',
+      error: null,
+      profileSaveStatus: 'idle',
+      profileSaveError: null,
+    })
   },
 
   setDragging: (isDragging) => {
@@ -125,6 +145,41 @@ export const useCvStore = create<CvStore>()((set, get) => ({
           error instanceof Error ? error.message : 'Failed to parse CV from PDF',
         status: 'error',
       })
+    }
+  },
+
+  updateProfile: async (id, profile) => {
+    set({ profileSaveStatus: 'saving', profileSaveError: null })
+
+    const previousRecords = get().records
+    set({
+      records: previousRecords.map((record) =>
+        record.id === id ? { ...record, profile } : record,
+      ),
+    })
+
+    useGenerateStore.getState().reset()
+    useJobDescriptionStore.getState().resetAnalysis()
+
+    try {
+      const updated = await updateCvRecord(id, profile)
+      set({
+        records: get().records.map((record) =>
+          record.id === id ? updated : record,
+        ),
+        profileSaveStatus: 'saved',
+        profileSaveError: null,
+      })
+    } catch (error) {
+      set({
+        records: previousRecords,
+        profileSaveStatus: 'error',
+        profileSaveError:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save CV profile changes',
+      })
+      throw error
     }
   },
 

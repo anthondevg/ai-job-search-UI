@@ -43,6 +43,16 @@ export type CvPreviewTranslations = {
   skills: string
   experience: string
   empty: string
+  addSkill: string
+  skillPlaceholder: string
+  removeSkill: string
+  addBullet: string
+  bulletPlaceholder: string
+  removeBullet: string
+  saving: string
+  saved: string
+  saveFailed: string
+  editSummaryHint: string
 }
 
 export type CvTabsTranslations = {

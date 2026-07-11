@@ -3,6 +3,7 @@ import type {
   ParseCvErrorResponse,
   ParseCvResponse,
   SavedCvRecord,
+  UpdateCvResponse,
 } from '../types/cvProfile'
 import { apiFetch, parseApiError } from '../utils/apiClient'
 
@@ -45,4 +46,24 @@ export async function deleteCvRecord(id: string): Promise<void> {
   if (!response.ok) {
     throw new Error(await parseApiError(response))
   }
+}
+
+export async function updateCvRecord(
+  id: string,
+  profile: SavedCvRecord['profile'],
+): Promise<SavedCvRecord> {
+  const response = await apiFetch(`/api/cv/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ profile }),
+  })
+
+  const data = (await response.json()) as UpdateCvResponse | ParseCvErrorResponse
+
+  if (!response.ok) {
+    const errorMessage =
+      'error' in data ? data.error : await parseApiError(response)
+    throw new Error(errorMessage)
+  }
+
+  return (data as UpdateCvResponse).record
 }

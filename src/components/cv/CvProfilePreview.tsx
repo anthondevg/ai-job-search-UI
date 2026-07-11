@@ -68,7 +68,7 @@ export default function CvProfilePreview({
             <p className="mt-0.5 font-mono text-xs text-muted">{fileName}</p>
           )}
         </div>
-        <span className="match-chip match-chip-success">
+        <span className="bg-success px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-accent-foreground">
           {resolvedBadge}
         </span>
       </div>
@@ -128,25 +128,16 @@ export default function CvProfilePreview({
           )}
         </section>
 
-        {compact ? (
-          <details className="match-frame rounded-card border-border bg-surface-muted sm:col-span-2">
-            <summary className="cursor-pointer list-none px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden">
-              <span className="text-sm font-semibold text-heading">
-                {t('pages.cv.preview.experience')}
-              </span>
-            </summary>
-            <div className="border-t border-border px-4 py-3">
-              {experienceSection}
-            </div>
-          </details>
-        ) : (
-          <section className="match-frame rounded-card border-border bg-surface-muted p-4 lg:col-span-2">
-            <h3 className="text-sm font-semibold text-heading">
-              {t('pages.cv.preview.experience')}
-            </h3>
-            <div className="mt-3">{experienceSection}</div>
-          </section>
-        )}
+        <section
+          className={`match-frame rounded-card border-border bg-surface-muted p-4 ${
+            compact ? 'sm:col-span-2' : 'lg:col-span-2'
+          }`}
+        >
+          <h3 className="text-sm font-semibold text-heading">
+            {t('pages.cv.preview.experience')}
+          </h3>
+          <div className="mt-3">{experienceSection}</div>
+        </section>
       </div>
     </div>
   )

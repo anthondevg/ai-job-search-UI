@@ -51,6 +51,10 @@ export type ParseCvErrorResponse = {
   error: string
 }
 
+export type UpdateCvResponse = {
+  record: SavedCvRecord
+}
+
 export type CvUploadStatus =
   | 'idle'
   | 'dragging'
