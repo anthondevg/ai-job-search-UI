@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { cvRoutes } from './routes/cv.js'
+import { generateRoutes } from './routes/generate.js'
 
 const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173'
 
@@ -18,3 +19,4 @@ app.use(
 app.get('/health', (c) => c.json({ status: 'ok' }))
 
 app.route('/api/cv', cvRoutes)
+app.route('/api/cv', generateRoutes)

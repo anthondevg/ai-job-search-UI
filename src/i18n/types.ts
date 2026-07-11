@@ -57,10 +57,47 @@ export type CvJobDescriptionTranslations = {
   characterCountLabel: string
 }
 
+export type CvGenerateAnalysisTranslations = {
+  title: string
+  description: string
+  roleTitle: string
+  seniority: string
+  keywords: string
+  requiredSkills: string
+  preferredSkills: string
+}
+
+export type CvGenerateActionsTranslations = {
+  analyze: string
+  analyzing: string
+  generate: string
+  generating: string
+}
+
+export type CvGenerateTailoredTranslations = {
+  badge: string
+  matchedSkills: string
+  matchedKeywords: string
+  adaptationNotes: string
+  missingFromCv: string
+  missingFromCvHint: string
+}
+
+export type CvGenerateErrorsTranslations = {
+  jobDescriptionTooShort: string
+  analyzeFailed: string
+  analysisRequired: string
+  generateFailed: string
+}
+
 export type CvGenerateTranslations = {
   activeCv: string
   noActiveCv: string
   jobDescription: CvJobDescriptionTranslations
+  analysis: CvGenerateAnalysisTranslations
+  actions: CvGenerateActionsTranslations
+  tailored: CvGenerateTailoredTranslations
+  errors: CvGenerateErrorsTranslations
 }
 
 export type Translations = {
@@ -117,6 +154,10 @@ export type TranslationKey =
   | `pages.cv.library.${keyof CvLibraryTranslations}`
   | `pages.cv.library.errors.${keyof CvLibraryTranslations['errors']}`
   | `pages.cv.preview.${keyof CvPreviewTranslations}`
-  | `pages.cv.generate.${Exclude<keyof CvGenerateTranslations, 'jobDescription'>}`
+  | `pages.cv.generate.${Exclude<keyof CvGenerateTranslations, 'jobDescription' | 'analysis' | 'actions' | 'tailored' | 'errors'>}`
   | `pages.cv.generate.jobDescription.${keyof CvJobDescriptionTranslations}`
+  | `pages.cv.generate.analysis.${keyof CvGenerateAnalysisTranslations}`
+  | `pages.cv.generate.actions.${keyof CvGenerateActionsTranslations}`
+  | `pages.cv.generate.tailored.${keyof CvGenerateTailoredTranslations}`
+  | `pages.cv.generate.errors.${keyof CvGenerateErrorsTranslations}`
   | `pages.jobScraperMarket.${keyof Translations['pages']['jobScraperMarket']}`

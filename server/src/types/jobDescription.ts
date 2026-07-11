@@ -1,5 +1,3 @@
-export type JobDescriptionStatus = 'idle' | 'analyzing' | 'ready' | 'error'
-
 export type JobDescriptionAnalysis = {
   roleTitle: string
   seniority: string

@@ -4,13 +4,17 @@ import type { CVProfile } from '../../types/cvProfile'
 type CvProfilePreviewProps = {
   profile: CVProfile
   fileName: string | null
+  badgeLabel?: string
 }
 
 export default function CvProfilePreview({
   profile,
   fileName,
+  badgeLabel,
 }: CvProfilePreviewProps) {
   const { t } = useTranslation()
+  const resolvedBadge =
+    badgeLabel ?? t('pages.cv.preview.sourceOfTruth')
 
   return (
     <div className="space-y-4">
@@ -24,7 +28,7 @@ export default function CvProfilePreview({
           )}
         </div>
         <span className="rounded-full bg-success-subtle px-3 py-1 text-xs font-medium text-success">
-          {t('pages.cv.preview.sourceOfTruth')}
+          {resolvedBadge}
         </span>
       </div>
 

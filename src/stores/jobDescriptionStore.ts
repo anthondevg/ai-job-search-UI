@@ -3,6 +3,7 @@ import type {
   JobDescriptionAnalysis,
   JobDescriptionStatus,
 } from '../types/jobDescription'
+import { useGenerateStore } from './generateStore'
 
 const TEXT_STORAGE_KEY = 'ai-job-search-job-description-text'
 
@@ -44,11 +45,13 @@ export const useJobDescriptionStore = create<JobDescriptionStore>()((set) => ({
 
   setText: (text) => {
     persistText(text)
+    useGenerateStore.getState().reset()
     set({ text, status: 'idle', analysis: null, error: null })
   },
 
   clearText: () => {
     persistText('')
+    useGenerateStore.getState().reset()
     set({ text: '', status: 'idle', analysis: null, error: null })
   },
 

@@ -78,13 +78,44 @@ export const translations: Record<Language, Translations> = {
           jobDescription: {
             title: 'Job description',
             description:
-              'Paste the full posting from LinkedIn, Indeed, InfoJobs, or a company careers page. We will extract keywords and required skills next.',
+              'Paste the full posting from LinkedIn, Indeed, InfoJobs, or a company careers page.',
             label: 'Job description',
             placeholder:
               'Paste the job title, responsibilities, requirements, and skills from the posting here...',
             hint: 'Include the full text for better keyword and skill extraction.',
             clear: 'Clear',
             characterCountLabel: 'Characters',
+          },
+          analysis: {
+            title: 'Job analysis',
+            description: 'Keywords and skills extracted from the posting.',
+            roleTitle: 'Role',
+            seniority: 'Seniority',
+            keywords: 'ATS keywords',
+            requiredSkills: 'Required skills',
+            preferredSkills: 'Preferred skills',
+          },
+          actions: {
+            analyze: 'Analyze job description',
+            analyzing: 'Analyzing...',
+            generate: 'Generate tailored CV',
+            generating: 'Generating...',
+          },
+          tailored: {
+            badge: 'Tailored CV',
+            matchedSkills: 'Matched job skills',
+            matchedKeywords: 'Matched ATS keywords',
+            adaptationNotes: 'What changed',
+            missingFromCv: 'Skills in the job but not in your CV',
+            missingFromCvHint:
+              'These were not added to your CV — only real experience from your source profile is used.',
+          },
+          errors: {
+            jobDescriptionTooShort:
+              'Paste a longer job description before continuing (at least 50 characters).',
+            analyzeFailed: 'Failed to analyze the job description. Please try again.',
+            analysisRequired: 'Analyze the job description before generating a tailored CV.',
+            generateFailed: 'Failed to generate the tailored CV. Please try again.',
           },
         },
       },
@@ -173,13 +204,47 @@ export const translations: Record<Language, Translations> = {
           jobDescription: {
             title: 'Descripción del puesto',
             description:
-              'Pega el anuncio completo de LinkedIn, Indeed, InfoJobs o la página de careers de una empresa. A continuación extraeremos palabras clave y skills requeridas.',
+              'Pega el anuncio completo de LinkedIn, Indeed, InfoJobs o la página de careers de una empresa.',
             label: 'Descripción del puesto',
             placeholder:
               'Pega aquí el título, responsabilidades, requisitos y skills del anuncio...',
             hint: 'Incluye el texto completo para una mejor extracción de keywords y skills.',
             clear: 'Limpiar',
             characterCountLabel: 'Caracteres',
+          },
+          analysis: {
+            title: 'Análisis del puesto',
+            description: 'Keywords y skills extraídas del anuncio.',
+            roleTitle: 'Rol',
+            seniority: 'Seniority',
+            keywords: 'Keywords ATS',
+            requiredSkills: 'Skills requeridas',
+            preferredSkills: 'Skills deseables',
+          },
+          actions: {
+            analyze: 'Analizar descripción',
+            analyzing: 'Analizando...',
+            generate: 'Generar CV adaptado',
+            generating: 'Generando...',
+          },
+          tailored: {
+            badge: 'CV adaptado',
+            matchedSkills: 'Skills del puesto matcheadas',
+            matchedKeywords: 'Keywords ATS matcheadas',
+            adaptationNotes: 'Qué cambió',
+            missingFromCv: 'Skills del puesto que no están en tu CV',
+            missingFromCvHint:
+              'No se añadieron a tu CV — solo se usa experiencia real de tu perfil fuente.',
+          },
+          errors: {
+            jobDescriptionTooShort:
+              'Pega una descripción más larga antes de continuar (mínimo 50 caracteres).',
+            analyzeFailed:
+              'No se pudo analizar la descripción del puesto. Inténtalo de nuevo.',
+            analysisRequired:
+              'Analiza la descripción del puesto antes de generar el CV adaptado.',
+            generateFailed:
+              'No se pudo generar el CV adaptado. Inténtalo de nuevo.',
           },
         },
       },
