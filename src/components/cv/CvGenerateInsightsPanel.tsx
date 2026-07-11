@@ -24,7 +24,7 @@ function CollapsibleSection({
   return (
     <details
       open={defaultOpen}
-      className="group rounded-card border border-border bg-surface-muted"
+      className="group match-frame rounded-card border-border bg-surface-muted"
     >
       <summary className="cursor-pointer list-none px-4 py-3 marker:content-none [&::-webkit-details-marker]:hidden">
         <div className="flex items-start justify-between gap-3">

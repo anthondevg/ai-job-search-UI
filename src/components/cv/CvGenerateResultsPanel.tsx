@@ -22,7 +22,7 @@ function EmptyState({
   description: string
 }) {
   return (
-    <div className="rounded-card border border-dashed border-border bg-surface-muted/40 px-4 py-8 text-center">
+    <div className="match-frame rounded-card border-dashed border-border bg-surface-muted/40 px-4 py-8 text-center">
       <p className="font-display text-sm font-semibold text-heading">{title}</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-muted">{description}</p>
     </div>
@@ -68,7 +68,7 @@ export default function CvGenerateResultsPanel({
         </h2>
 
         {generateError && (
-          <div className="mb-4 rounded-card border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
+          <div className="mb-4 match-frame rounded-card border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
             {generateError}
           </div>
         )}

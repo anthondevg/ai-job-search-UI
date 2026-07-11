@@ -47,14 +47,14 @@ function getScoreLabelKey(score: number) {
 function getEligibilityTone(eligibility: LocationEligibility) {
   switch (eligibility) {
     case 'eligible':
-      return 'border-success/40 bg-success-subtle text-success'
+      return 'match-rail match-rail-success bg-success-subtle text-success'
     case 'likely_eligible':
-      return 'border-accent/30 bg-accent-subtle text-accent'
+      return 'match-rail match-rail-accent bg-accent-subtle text-accent'
     case 'unclear':
-      return 'border-border bg-surface-raised text-muted'
+      return 'match-frame border-border bg-surface-raised text-muted'
     case 'unlikely':
     case 'ineligible':
-      return 'border-danger-border bg-danger-subtle text-danger'
+      return 'match-rail match-rail-danger bg-danger-subtle text-danger'
   }
 }
 
@@ -99,7 +99,7 @@ export default function ProfileCompatibilityCard({
       className={
         bare
           ? 'space-y-5'
-          : `rounded-card border border-border bg-surface-muted p-4 transition-shadow duration-700 ${tone.glow}`
+          : `match-frame rounded-card border-border bg-surface-muted p-4 transition-shadow duration-700 ${tone.glow}`
       }
     >
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
@@ -164,7 +164,7 @@ export default function ProfileCompatibilityCard({
             )}
           </div>
 
-          <div className={`rounded-control border p-3 ${locationTone}`}>
+          <div className={`rounded-control p-3 ${locationTone}`}>
             <p className="text-xs font-medium uppercase tracking-wide opacity-80">
               {t('pages.cv.generate.compatibility.location.title')}
             </p>

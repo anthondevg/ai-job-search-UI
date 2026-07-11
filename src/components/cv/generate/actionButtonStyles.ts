@@ -12,8 +12,8 @@ export function actionButtonClassName({
 
   if (loading) {
     return variant === 'primary'
-      ? `${base} pointer-events-none cursor-wait border-accent bg-accent text-accent-foreground opacity-100 ring-2 ring-accent/40`
-      : `${base} pointer-events-none cursor-wait border-accent/50 bg-surface-tab text-heading opacity-100 ring-2 ring-accent/30`
+      ? `${base} match-loading-rail pointer-events-none cursor-wait border-accent bg-accent text-accent-foreground opacity-100`
+      : `${base} match-loading-rail pointer-events-none cursor-wait border-border bg-surface-tab text-heading opacity-100`
   }
 
   if (unavailable) {

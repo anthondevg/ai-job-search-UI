@@ -3,8 +3,12 @@ export type Language = 'en' | 'es'
 export type CvUploadTranslations = {
   title: string
   description: string
+  collapsedSummary: string
   dropzone: string
+  dropzoneShort: string
   hint: string
+  browse: string
+  emptyLibraryHint: string
   parsing: string
   replace: string
   errors: {

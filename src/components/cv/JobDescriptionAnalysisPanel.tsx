@@ -1,4 +1,5 @@
 import { useTranslation } from '../../hooks/useTranslation'
+import SkillBadge from '../SkillBadge'
 import type { JobDescriptionAnalysis } from '../../types/jobDescription'
 
 type JobDescriptionAnalysisPanelProps = {
@@ -15,22 +16,17 @@ function TagList({
 }) {
   if (!items.length) return null
 
-  const className =
+  const badgeVariant =
     variant === 'keyword'
-      ? 'border-accent/40 bg-accent-subtle text-accent'
+      ? 'keyword'
       : variant === 'required'
-        ? 'border-border bg-surface-tab text-body'
-        : 'border-border-muted bg-surface-raised text-muted'
+        ? 'skill'
+        : 'skill'
 
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className="flex flex-wrap gap-2">
       {items.map((item) => (
-        <span
-          key={item}
-          className={`rounded-tag border px-2 py-0.5 font-mono text-xs font-medium ${className}`}
-        >
-          {item}
-        </span>
+        <SkillBadge key={item} label={item} variant={badgeVariant} />
       ))}
     </div>
   )
@@ -112,7 +108,7 @@ export default function JobDescriptionAnalysisPanel({
   }
 
   return (
-    <section className="space-y-4 rounded-card border border-border bg-surface-muted p-4">
+    <section className="match-frame space-y-4 rounded-card border-border bg-surface-muted p-4">
       {content}
     </section>
   )

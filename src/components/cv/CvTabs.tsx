@@ -15,7 +15,7 @@ export default function CvTabs({ activeTab, onChange, children }: CvTabsProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-panel border border-border bg-surface-raised">
+    <div className="match-frame flex flex-col overflow-hidden rounded-panel border-border bg-surface-raised">
       <div
         role="tablist"
         aria-label={t('pages.cv.tabs.label')}

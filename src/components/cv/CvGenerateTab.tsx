@@ -23,7 +23,7 @@ export default function CvGenerateTab() {
     <div className="flex flex-col gap-6 pb-4">
       {DEV_MOCK_GENERATE && (
         <div
-          className="rounded-card border border-warm/40 bg-warm-subtle px-4 py-2 font-mono text-xs text-warm"
+          className="match-rail match-rail-warm match-notch match-notch-warm rounded-card bg-warm-subtle px-4 py-2 font-mono text-xs text-warm"
           role="status"
         >
           {t('pages.cv.generate.devMockBanner')}
@@ -35,7 +35,7 @@ export default function CvGenerateTab() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start">
         <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
           {activeRecord ? (
-            <div className="rounded-card border-2 border-accent bg-surface-raised px-4 py-3 shadow-sm">
+            <div className="match-rail match-rail-accent match-notch match-frame-emphasis rounded-card bg-surface-raised px-4 py-3 shadow-sm">
               <p className="text-xs font-medium uppercase tracking-widest text-accent">
                 {t('pages.cv.generate.activeCv')}
               </p>
@@ -45,7 +45,7 @@ export default function CvGenerateTab() {
               <p className="font-mono text-xs text-body">{activeRecord.fileName}</p>
             </div>
           ) : (
-            <div className="rounded-card border border-dashed border-border bg-surface-muted/40 px-4 py-3 text-sm text-muted">
+            <div className="match-frame rounded-card border border-dashed border-border bg-surface-muted/40 px-4 py-3 text-sm text-muted">
               {t('pages.cv.generate.noActiveCv')}
             </div>
           )}
@@ -54,7 +54,7 @@ export default function CvGenerateTab() {
 
           {jdError && (
             <div
-              className="rounded-card border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger"
+              className="match-rail match-rail-danger match-frame rounded-card bg-danger-subtle px-4 py-3 text-sm text-danger"
               role="alert"
             >
               {jdError}

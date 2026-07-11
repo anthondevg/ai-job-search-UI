@@ -139,12 +139,12 @@ export default function Sidebar({
                 title={!showLabels ? label : undefined}
                 onClick={onMobileClose}
                 className={({ isActive }) =>
-                  `mx-0.5 flex items-center gap-3 rounded-card border-l-2 px-3 py-2.5 text-sm font-medium transition-colors ${
-                    showLabels ? '' : 'justify-center border-l-0'
+                  `mx-0.5 flex items-center gap-3 rounded-card px-3 py-2.5 text-sm font-medium transition-colors ${
+                    showLabels ? '' : 'justify-center'
                   } ${
                     isActive
-                      ? 'border-accent bg-sidebar-active text-sidebar-heading'
-                      : 'border-transparent text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-body'
+                      ? 'match-rail-only-accent bg-sidebar-active text-sidebar-heading'
+                      : 'border-l-[var(--border-width-rail)] border-transparent text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-body'
                   }`
                 }
               >

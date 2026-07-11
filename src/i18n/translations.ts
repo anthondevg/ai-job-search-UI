@@ -38,8 +38,12 @@ export const translations: Record<Language, Translations> = {
           title: 'Import your CV',
           description:
             'Drop a PDF here to extract your experience, skills, and summary without inventing data.',
+          collapsedSummary: 'Import another CV',
           dropzone: 'Drag & drop your PDF here, or click to browse',
+          dropzoneShort: 'Drop a PDF or click to browse',
           hint: 'PDF only · Max 10 MB',
+          browse: 'Browse files',
+          emptyLibraryHint: 'Import your first CV below to get started.',
           parsing: 'Parsing your CV with Gemini...',
           replace: 'Upload a different CV',
           errors: {
@@ -244,8 +248,12 @@ export const translations: Record<Language, Translations> = {
           title: 'Importar tu CV',
           description:
             'Arrastra un PDF aquí para extraer experiencia, skills y resumen sin inventar datos.',
+          collapsedSummary: 'Importar otro CV',
           dropzone: 'Arrastra y suelta tu PDF aquí, o haz clic para buscar',
+          dropzoneShort: 'Suelta un PDF o haz clic para buscar',
           hint: 'Solo PDF · Máx. 10 MB',
+          browse: 'Buscar archivo',
+          emptyLibraryHint: 'Importa tu primer CV abajo para empezar.',
           parsing: 'Analizando tu CV con Gemini...',
           replace: 'Subir otro CV',
           errors: {

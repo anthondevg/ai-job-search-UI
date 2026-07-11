@@ -31,7 +31,7 @@ export default function JobDescriptionInput() {
             type="button"
             onClick={clearText}
             disabled={isBusy}
-            className="shrink-0 rounded-control border border-border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-border-muted hover:text-body disabled:pointer-events-none disabled:opacity-50"
+            className="match-frame shrink-0 rounded-control border-border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-border-muted hover:text-body disabled:pointer-events-none disabled:opacity-50"
           >
             {t('pages.cv.generate.jobDescription.clear')}
           </button>
@@ -52,7 +52,7 @@ export default function JobDescriptionInput() {
           maxLength={maxLength}
           disabled={isBusy}
           aria-busy={isBusy}
-          className="min-h-80 w-full resize-y rounded-card border border-border bg-surface-raised px-4 py-3 text-sm leading-relaxed text-body placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-60 lg:min-h-96"
+          className="match-input match-frame min-h-80 w-full resize-y rounded-card border-border bg-surface-raised px-4 py-3 text-sm leading-relaxed text-body placeholder:text-muted/70 disabled:cursor-not-allowed disabled:opacity-60 lg:min-h-96"
         />
         <p className="text-xs text-muted">
           {t('pages.cv.generate.jobDescription.hint')}

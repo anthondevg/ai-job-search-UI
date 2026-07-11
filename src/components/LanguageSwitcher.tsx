@@ -17,8 +17,8 @@ export default function LanguageSwitcher({
 
   const labelClass = isSidebar ? 'text-sidebar-muted' : 'text-muted'
   const containerClass = isSidebar
-    ? 'border border-sidebar-border bg-sidebar-hover'
-    : 'border border-border bg-surface-muted'
+    ? 'match-frame border-sidebar-border bg-sidebar-hover'
+    : 'match-frame border-border bg-surface-muted'
   const inactiveClass = isSidebar
     ? 'text-sidebar-muted hover:text-sidebar-heading'
     : 'text-muted hover:text-heading'

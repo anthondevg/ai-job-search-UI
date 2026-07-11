@@ -23,12 +23,12 @@ export default function CvGenerateStepper({ currentStep }: CvGenerateStepperProp
           return (
             <li
               key={stepId}
-              className={`rounded-card border px-3 py-2.5 transition-colors sm:px-4 ${
+              className={`rounded-card px-3 py-2.5 transition-colors sm:px-4 ${
                 status === 'current'
-                  ? 'border-accent bg-accent-subtle'
+                  ? 'match-rail match-rail-accent match-frame-emphasis bg-accent-subtle'
                   : status === 'completed'
-                    ? 'border-success/40 bg-success-subtle/50'
-                    : 'border-border bg-surface-muted/40'
+                    ? 'match-rail match-rail-success bg-success-subtle/50'
+                    : 'match-frame border-border bg-surface-muted/40'
               }`}
             >
               <div className="flex items-center gap-2">

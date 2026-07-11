@@ -53,10 +53,10 @@ export default function CvLibrary({
             return (
               <li
                 key={record.id}
-                className={`rounded-card border p-4 transition-colors ${
+                className={`rounded-card p-4 transition-colors ${
                   isActive
-                    ? 'border-2 border-accent bg-surface-raised shadow-sm'
-                    : 'border-border bg-surface-raised hover:border-border-muted'
+                    ? 'match-rail match-rail-accent match-notch match-frame-emphasis bg-surface-raised shadow-sm'
+                    : 'match-frame border-border bg-surface-raised hover:border-border-muted'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -86,7 +86,7 @@ export default function CvLibrary({
 
                   <div className="flex shrink-0 items-center gap-2">
                     {isActive && (
-                      <span className="rounded-tag bg-accent px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-widest text-accent-foreground">
+                      <span className="match-chip match-chip-accent font-semibold uppercase tracking-widest">
                         {t('pages.cv.library.active')}
                       </span>
                     )}

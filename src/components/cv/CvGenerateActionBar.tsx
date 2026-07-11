@@ -105,7 +105,7 @@ export default function CvGenerateActionBar({ currentStep }: CvGenerateActionBar
                 onChange={(event) =>
                   setOutputLanguage(event.target.value as CvOutputLanguage)
                 }
-                className="rounded-control border border-border bg-surface-raised px-3 py-2 text-sm text-body focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-50"
+                className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {languageOptions.map((language) => (
                   <option key={language} value={language}>

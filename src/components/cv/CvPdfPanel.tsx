@@ -46,7 +46,7 @@ export default function CvPdfPanel({
   }, [labels, profile, roleTitle, t])
 
   return (
-    <section className="space-y-4 rounded-card border border-border bg-surface-muted p-4">
+    <section className="match-frame space-y-4 rounded-card border-border bg-surface-muted p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="font-display text-base font-semibold text-heading">
@@ -61,7 +61,7 @@ export default function CvPdfPanel({
           type="button"
           onClick={() => void handleDownload()}
           disabled={isDownloading}
-          className="shrink-0 rounded-control border border-accent bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="match-frame shrink-0 rounded-control border-accent bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isDownloading
             ? t('pages.cv.generate.pdf.downloading')
@@ -70,12 +70,12 @@ export default function CvPdfPanel({
       </div>
 
       {downloadError && (
-        <div className="rounded-card border border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
+        <div className="match-frame rounded-card border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
           {downloadError}
         </div>
       )}
 
-      <div className="overflow-hidden rounded-card border border-border bg-[#f8fafc] p-1">
+      <div className="match-frame overflow-hidden rounded-card border-border bg-[#f8fafc] p-1">
         <PDFViewer width="100%" height={720} showToolbar>
           {document}
         </PDFViewer>
