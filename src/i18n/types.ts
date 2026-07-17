@@ -68,6 +68,10 @@ export type CvJobDescriptionTranslations = {
   placeholder: string
   hint: string
   clear: string
+  pasteFromClipboard: string
+  pasting: string
+  pasteUnavailable: string
+  pasteTooShort: string
   characterCountLabel: string
 }
 

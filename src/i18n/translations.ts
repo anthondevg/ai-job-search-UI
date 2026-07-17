@@ -99,8 +99,13 @@ export const translations: Record<Language, Translations> = {
             label: 'Job description',
             placeholder:
               'Paste the job title, responsibilities, requirements, and skills from the posting here...',
-            hint: 'Include the full text for better keyword and skill extraction.',
+            hint: 'Copy a posting, switch back here — we fill the box when it is empty. Or use Paste from clipboard.',
             clear: 'Clear',
+            pasteFromClipboard: 'Paste from clipboard',
+            pasting: 'Pasting…',
+            pasteUnavailable:
+              'Could not read the clipboard. Allow clipboard access or press Ctrl+V.',
+            pasteTooShort: 'Clipboard text is too short to look like a job posting.',
             characterCountLabel: 'Characters',
           },
           outputLanguage: {
@@ -320,8 +325,13 @@ export const translations: Record<Language, Translations> = {
             label: 'Descripción del puesto',
             placeholder:
               'Pega aquí el título, responsabilidades, requisitos y skills del anuncio...',
-            hint: 'Incluye el texto completo para una mejor extracción de keywords y skills.',
+            hint: 'Copia un anuncio, vuelve aquí y lo rellenamos si el campo está vacío. O usa Pegar del portapapeles.',
             clear: 'Limpiar',
+            pasteFromClipboard: 'Pegar del portapapeles',
+            pasting: 'Pegando…',
+            pasteUnavailable:
+              'No se pudo leer el portapapeles. Permite el acceso o pulsa Ctrl+V.',
+            pasteTooShort: 'El texto del portapapeles es demasiado corto para un anuncio.',
             characterCountLabel: 'Caracteres',
           },
           outputLanguage: {

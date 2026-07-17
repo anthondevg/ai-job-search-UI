@@ -65,7 +65,8 @@ export function useCvGeneration() {
   }, [activeRecord, analysis, canGenerate, hasText, isBusy])
 
   const analyzeJobDescription = useCallback(async () => {
-    if (!hasText) {
+    const currentText = useJobDescriptionStore.getState().text
+    if (currentText.trim().length < MIN_JOB_DESCRIPTION_LENGTH) {
       setJdError(t('pages.cv.generate.errors.jobDescriptionTooShort'))
       return
     }
@@ -84,7 +85,7 @@ export function useCvGeneration() {
 
     try {
       const result = await analyzeJobDescriptionApi(
-        text,
+        currentText,
         activeRecord?.profile,
       )
       setAnalysis(result.analysis)
@@ -98,14 +99,12 @@ export function useCvGeneration() {
     }
   }, [
     activeRecord?.profile,
-    hasText,
     setAnalysis,
     setCompatibility,
     setJdError,
     setJdStatus,
     setGenerateError,
     t,
-    text,
   ])
 
   const generateTailoredCv = useCallback(async () => {
