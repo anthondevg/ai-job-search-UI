@@ -14,6 +14,8 @@ export default function CvGenerateTab() {
     analysis,
     compatibility,
     tailoredResult,
+    coverLetterResult,
+    coverLetterError,
     jdError,
     generateError,
     outputLanguage,
@@ -64,8 +66,11 @@ export default function CvGenerateTab() {
           analysis={analysis}
           compatibility={compatibility}
           tailoredResult={tailoredResult}
+          coverLetterResult={coverLetterResult}
+          sourceProfile={activeRecord?.profile ?? null}
           outputLanguage={outputLanguage}
           generateError={generateError}
+          coverLetterError={coverLetterError}
         />
       </div>
 

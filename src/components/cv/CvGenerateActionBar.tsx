@@ -16,8 +16,10 @@ export default function CvGenerateActionBar({ currentStep }: CvGenerateActionBar
   const {
     canAnalyze,
     canGenerate,
+    canGenerateCoverLetter,
     isAnalyzing,
     isGenerating,
+    isGeneratingCoverLetter,
     isBusy,
     hasText,
     analysis,
@@ -26,18 +28,22 @@ export default function CvGenerateActionBar({ currentStep }: CvGenerateActionBar
     setOutputLanguage,
     analyzeJobDescription,
     generateTailoredCv,
+    generateCoverLetter,
     generateBlockedReason,
   } = useCvGeneration()
 
   const analyzeUnavailable = !canAnalyze && !isAnalyzing
   const generateUnavailable = !canGenerate && !isGenerating
+  const coverLetterUnavailable = !canGenerateCoverLetter && !isGeneratingCoverLetter
   const showGenerateSection = !!analysis
 
   const statusMessage = isAnalyzing
     ? t('pages.cv.generate.actions.analyzingHint')
     : isGenerating
       ? t('pages.cv.generate.actions.generatingHint')
-      : null
+      : isGeneratingCoverLetter
+        ? t('pages.cv.generate.actions.generatingCoverLetterHint')
+        : null
 
   const blockedHint =
     generateBlockedReason && !isBusy
@@ -56,7 +62,9 @@ export default function CvGenerateActionBar({ currentStep }: CvGenerateActionBar
 
           {statusMessage ? (
             <p className="flex items-center gap-2 text-sm text-heading" role="status" aria-live="polite">
-              {(isAnalyzing || isGenerating) && <ActionSpinner />}
+              {(isAnalyzing || isGenerating || isGeneratingCoverLetter) && (
+                <ActionSpinner />
+              )}
               {statusMessage}
             </p>
           ) : (
@@ -130,6 +138,24 @@ export default function CvGenerateActionBar({ currentStep }: CvGenerateActionBar
                 {isGenerating
                   ? t('pages.cv.generate.actions.generating')
                   : t('pages.cv.generate.actions.generate')}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void generateCoverLetter()}
+                disabled={coverLetterUnavailable}
+                aria-busy={isGeneratingCoverLetter}
+                aria-disabled={coverLetterUnavailable || isGeneratingCoverLetter}
+                className={actionButtonClassName({
+                  loading: isGeneratingCoverLetter,
+                  unavailable: coverLetterUnavailable,
+                  variant: 'secondary',
+                })}
+              >
+                {isGeneratingCoverLetter && <ActionSpinner />}
+                {isGeneratingCoverLetter
+                  ? t('pages.cv.generate.actions.generatingCoverLetter')
+                  : t('pages.cv.generate.actions.generateCoverLetter')}
               </button>
             </div>
           )}

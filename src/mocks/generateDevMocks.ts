@@ -1,4 +1,5 @@
 import type { ProfileCompatibility } from '../types/compatibility'
+import type { CoverLetterResult } from '../types/coverLetter'
 import type { CVProfile } from '../types/cvProfile'
 import type {
   AnalyzeJobResponse,
@@ -341,6 +342,21 @@ export const DEV_MOCK_TAILOR_RESULT: TailoredCvResult = {
       'Rewrote bullets to emphasize Node.js, React, microservices, and agile collaboration without inventing new roles.',
     ],
   },
+}
+
+export const DEV_MOCK_COVER_LETTER_RESULT: CoverLetterResult = {
+  roleTitle: 'Senior Full-Stack Engineer',
+  companyName: 'SafeRide',
+  body: `Dear Hiring Manager,
+
+I'm applying for the Senior Full-Stack Engineer role at SafeRide because your posting prioritizes production Node.js/React services, AWS, and regulated healthcare delivery — areas I've owned end-to-end for years.
+
+At Sears I ship full-stack features with Next.js and React against REST integrations, improving Core Web Vitals by 30% while partnering with product and QA in agile sprints. Previously I built a real-time auction platform on Node.js microservices with Dockerized deployments and secure API contracts, and contributed to a Novartis-facing healthcare platform where reliability and compliance mattered as much as speed.
+
+I'd welcome a conversation about how I can help SafeRide deliver secure, scalable web services on AWS. You can reach me anytime.
+
+Sincerely,
+Anthony Gonzalez`,
 }
 
 const DEV_MOCK_DELAY_MS = 700

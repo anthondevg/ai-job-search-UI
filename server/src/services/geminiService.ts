@@ -1,12 +1,15 @@
 import { GoogleGenAI, type Schema } from '@google/genai'
 import { PROFILE_COMPATIBILITY_PROMPT } from '../prompts/compatibilityPrompt.js'
 import { ANALYZE_JOB_DESCRIPTION_PROMPT } from '../prompts/analyzeJobDescriptionPrompt.js'
+import { COVER_LETTER_PROMPT } from '../prompts/coverLetterPrompt.js'
 import { PARSE_CV_PROMPT } from '../prompts/parseCvPrompt.js'
 import { TAILOR_CV_PROMPT } from '../prompts/tailorCvPrompt.js'
+import { coverLetterResultSchema } from '../schemas/coverLetterSchema.js'
 import { cvProfileJsonSchema } from '../schemas/cvProfileSchema.js'
 import { profileCompatibilitySchema } from '../schemas/compatibilitySchema.js'
 import { jobDescriptionAnalysisSchema } from '../schemas/jobDescriptionSchema.js'
 import { tailoredCvResultSchema } from '../schemas/tailoredCvSchema.js'
+import type { CoverLetterResult } from '../types/coverLetter.js'
 import type { CVProfile } from '../types/cvProfile.js'
 import type { ProfileCompatibility } from '../types/compatibility.js'
 import type { CvOutputLanguage } from '../types/cvOutputLanguage.js'
@@ -14,6 +17,7 @@ import type { JobDescriptionAnalysis } from '../types/jobDescription.js'
 import type { TailoredCvResult } from '../types/tailoredCv.js'
 import { validateCvProfile } from '../validators/validateCvProfile.js'
 import {
+  validateCoverLetterResult,
   validateJobDescriptionAnalysis,
   validateProfileCompatibility,
   validateTailoredCvResult,
@@ -285,5 +289,33 @@ export async function generateTailoredCv(
     tailoredCvResultSchema,
     validateTailoredCvResult,
     'generating tailored CV',
+  )
+}
+
+export async function generateCoverLetter(
+  sourceProfile: CVProfile,
+  jobDescription: string,
+  analysis: JobDescriptionAnalysis,
+  outputLanguage: CvOutputLanguage = 'en',
+): Promise<CoverLetterResult> {
+  const trimmed = assertJobDescriptionLength(jobDescription)
+
+  const userContent = JSON.stringify(
+    {
+      sourceProfile,
+      jobDescription: trimmed,
+      jobAnalysis: analysis,
+      outputLanguage,
+    },
+    null,
+    2,
+  )
+
+  return generateStructuredJson(
+    COVER_LETTER_PROMPT,
+    userContent,
+    coverLetterResultSchema,
+    validateCoverLetterResult,
+    'generating cover letter',
   )
 }

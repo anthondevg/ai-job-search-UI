@@ -156,6 +156,10 @@ export const translations: Record<Language, Translations> = {
             generate: 'Generate tailored CV',
             generating: 'Generating...',
             generatingHint: 'Tailoring your CV from your source profile. Please wait.',
+            generateCoverLetter: 'Generate cover letter',
+            generatingCoverLetter: 'Writing cover letter...',
+            generatingCoverLetterHint:
+              'Writing a role-specific cover letter from your CV and this posting.',
           },
           tailored: {
             badge: 'Tailored CV',
@@ -165,6 +169,21 @@ export const translations: Record<Language, Translations> = {
             missingFromCv: 'Skills in the job but not in your CV',
             missingFromCvHint:
               'These were not added to your CV — only real experience from your source profile is used.',
+          },
+          coverLetter: {
+            title: 'Cover letter',
+            description:
+              'Role-specific letter you can copy into applications or download as PDF.',
+            badge: 'Cover letter',
+            copy: 'Copy text',
+            copied: 'Copied',
+            copyFailed: 'Copy failed',
+            pdfPreviewTitle: 'Cover letter PDF',
+            pdfPreviewDescription: 'Download a clean one-page PDF for applications.',
+            pdfDownload: 'Download PDF',
+            pdfDownloading: 'Preparing PDF...',
+            pdfDownloadFailed: 'Failed to generate the PDF. Please try again.',
+            pdfLoadingPreview: 'Loading PDF preview...',
           },
           pdf: {
             previewTitle: 'CV document',
@@ -187,6 +206,7 @@ export const translations: Record<Language, Translations> = {
             analyzeFailed: 'Failed to analyze the job description. Please try again.',
             analysisRequired: 'Analyze the job description before generating a tailored CV.',
             generateFailed: 'Failed to generate the tailored CV. Please try again.',
+            coverLetterFailed: 'Failed to generate the cover letter. Please try again.',
           },
           steps: {
             label: 'Generation workflow',
@@ -206,6 +226,9 @@ export const translations: Record<Language, Translations> = {
             tailoredTitle: 'Tailored CV will appear here',
             tailoredDescription:
               'After reviewing the match, choose a language and generate your adapted CV.',
+            coverLetterTitle: 'Cover letter will appear here',
+            coverLetterDescription:
+              'After analyzing the posting, generate a cover letter tailored to this role.',
           },
           insights: {
             title: 'Job insights',
@@ -382,6 +405,10 @@ export const translations: Record<Language, Translations> = {
             generate: 'Generar CV adaptado',
             generating: 'Generando...',
             generatingHint: 'Adaptando tu CV desde el perfil base. Espera un momento.',
+            generateCoverLetter: 'Generar carta de presentación',
+            generatingCoverLetter: 'Escribiendo carta...',
+            generatingCoverLetterHint:
+              'Redactando una carta específica para este puesto a partir de tu CV.',
           },
           tailored: {
             badge: 'CV adaptado',
@@ -391,6 +418,21 @@ export const translations: Record<Language, Translations> = {
             missingFromCv: 'Skills del puesto que no están en tu CV',
             missingFromCvHint:
               'No se añadieron a tu CV — solo se usa experiencia real de tu perfil fuente.',
+          },
+          coverLetter: {
+            title: 'Carta de presentación',
+            description:
+              'Carta específica del puesto: cópiala en la aplicación o descárgala en PDF.',
+            badge: 'Carta',
+            copy: 'Copiar texto',
+            copied: 'Copiado',
+            copyFailed: 'No se pudo copiar',
+            pdfPreviewTitle: 'PDF de la carta',
+            pdfPreviewDescription: 'Descarga un PDF limpio de una página para aplicaciones.',
+            pdfDownload: 'Descargar PDF',
+            pdfDownloading: 'Preparando PDF...',
+            pdfDownloadFailed: 'No se pudo generar el PDF. Inténtalo de nuevo.',
+            pdfLoadingPreview: 'Cargando vista previa del PDF...',
           },
           pdf: {
             previewTitle: 'Documento CV',
@@ -416,6 +458,8 @@ export const translations: Record<Language, Translations> = {
               'Analiza la descripción del puesto antes de generar el CV adaptado.',
             generateFailed:
               'No se pudo generar el CV adaptado. Inténtalo de nuevo.',
+            coverLetterFailed:
+              'No se pudo generar la carta de presentación. Inténtalo de nuevo.',
           },
           steps: {
             label: 'Flujo de generación',
@@ -435,6 +479,9 @@ export const translations: Record<Language, Translations> = {
             tailoredTitle: 'El CV adaptado aparecerá aquí',
             tailoredDescription:
               'Tras revisar el match, elige idioma y genera tu CV adaptado.',
+            coverLetterTitle: 'La carta aparecerá aquí',
+            coverLetterDescription:
+              'Después de analizar la oferta, genera una carta de presentación para este puesto.',
           },
           insights: {
             title: 'Insights de la oferta',

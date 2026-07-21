@@ -1,3 +1,4 @@
+import type { CoverLetterResult } from '../types/coverLetter.js'
 import type {
   LocationEligibility,
   ProfileCompatibility,
@@ -133,5 +134,24 @@ export function validateTailoredCvResult(data: unknown): TailoredCvResult {
   return {
     profile: validateCvProfile(record.profile),
     meta: normalizeMeta(record.meta),
+  }
+}
+
+export function validateCoverLetterResult(data: unknown): CoverLetterResult {
+  if (!data || typeof data !== 'object') {
+    throw new Error('Invalid cover letter response from model')
+  }
+
+  const record = data as Record<string, unknown>
+  const body = asString(record.body)
+
+  if (!body) {
+    throw new Error('Cover letter response is missing body')
+  }
+
+  return {
+    roleTitle: asString(record.roleTitle),
+    companyName: asString(record.companyName),
+    body,
   }
 }

@@ -1,8 +1,11 @@
 import { useTranslation } from '../../hooks/useTranslation'
+import type { CoverLetterResult } from '../../types/coverLetter'
 import type { CvOutputLanguage } from '../../types/cvOutputLanguage'
 import type { ProfileCompatibility } from '../../types/compatibility'
 import type { JobDescriptionAnalysis } from '../../types/jobDescription'
 import type { TailoredCvResult } from '../../types/tailoredCv'
+import type { CVProfile } from '../../types/cvProfile'
+import CoverLetterPreview from './CoverLetterPreview'
 import CvGenerateInsightsPanel from './CvGenerateInsightsPanel'
 import TailoredCvPreview from './TailoredCvPreview'
 
@@ -10,8 +13,11 @@ type CvGenerateResultsPanelProps = {
   analysis: JobDescriptionAnalysis | null
   compatibility: ProfileCompatibility | null
   tailoredResult: TailoredCvResult | null
+  coverLetterResult: CoverLetterResult | null
+  sourceProfile: CVProfile | null
   outputLanguage: CvOutputLanguage
   generateError: string | null
+  coverLetterError: string | null
 }
 
 function EmptyState({
@@ -33,8 +39,11 @@ export default function CvGenerateResultsPanel({
   analysis,
   compatibility,
   tailoredResult,
+  coverLetterResult,
+  sourceProfile,
   outputLanguage,
   generateError,
+  coverLetterError,
 }: CvGenerateResultsPanelProps) {
   const { t } = useTranslation()
   const hasInsights = !!analysis || !!compatibility
@@ -84,6 +93,33 @@ export default function CvGenerateResultsPanel({
           <EmptyState
             title={t('pages.cv.generate.empty.tailoredTitle')}
             description={t('pages.cv.generate.empty.tailoredDescription')}
+          />
+        )}
+      </section>
+
+      <section aria-labelledby="generate-results-cover-letter">
+        <h2
+          id="generate-results-cover-letter"
+          className="mb-3 font-display text-base font-semibold text-heading"
+        >
+          {t('pages.cv.generate.coverLetter.title')}
+        </h2>
+
+        {coverLetterError && (
+          <div className="mb-4 match-frame rounded-card border-danger-border bg-danger-subtle px-4 py-3 text-sm text-danger">
+            {coverLetterError}
+          </div>
+        )}
+
+        {coverLetterResult && sourceProfile ? (
+          <CoverLetterPreview
+            profile={sourceProfile}
+            coverLetter={coverLetterResult}
+          />
+        ) : (
+          <EmptyState
+            title={t('pages.cv.generate.empty.coverLetterTitle')}
+            description={t('pages.cv.generate.empty.coverLetterDescription')}
           />
         )}
       </section>
