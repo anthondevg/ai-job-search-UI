@@ -4,8 +4,20 @@ import type { CVProfile } from '../types/cvProfile'
 
 const SAVE_DEBOUNCE_MS = 600
 
+function normalizeProfile(profile: CVProfile): CVProfile {
+  return {
+    ...profile,
+    education: profile.education ?? [],
+    projects: profile.projects ?? [],
+    languages: profile.languages ?? [],
+    certifications: profile.certifications ?? [],
+    skills: profile.skills ?? [],
+    experience: profile.experience ?? [],
+  }
+}
+
 export function useCvProfileEditor(recordId: string, initialProfile: CVProfile) {
-  const [draft, setDraft] = useState(initialProfile)
+  const [draft, setDraft] = useState(() => normalizeProfile(initialProfile))
   const updateProfile = useCvStore((state) => state.updateProfile)
   const profileSaveStatus = useCvStore((state) => state.profileSaveStatus)
   const profileSaveError = useCvStore((state) => state.profileSaveError)
@@ -17,7 +29,7 @@ export function useCvProfileEditor(recordId: string, initialProfile: CVProfile) 
       clearTimeout(timerRef.current)
       timerRef.current = null
     }
-    setDraft(initialProfile)
+    setDraft(normalizeProfile(initialProfile))
     lastSavedRef.current = JSON.stringify(initialProfile)
     // Only reset local draft when switching CV records, not on each server sync.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- initialProfile read on recordId change

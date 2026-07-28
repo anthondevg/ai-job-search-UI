@@ -22,12 +22,21 @@ export type EducationItem = {
   endDate: string
 }
 
+export type ProjectItem = {
+  name: string
+  description: string
+  url: string
+  startDate: string
+  endDate: string
+}
+
 export type CVProfile = {
   personalInfo: PersonalInfo
   summary: string
   skills: string[]
   experience: ExperienceItem[]
   education: EducationItem[]
+  projects: ProjectItem[]
   languages: string[]
   certifications: string[]
 }

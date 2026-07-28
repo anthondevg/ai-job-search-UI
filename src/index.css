@@ -6,20 +6,20 @@
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Surfaces — dusk slate (medium-dark, not near-black) */
-  --color-surface: #3f4658;
-  --color-surface-raised: #4a5368;
-  --color-surface-muted: #363e4f;
-  --color-surface-tab: #525c72;
+  /* Surfaces — deep graphite (near-black) */
+  --color-surface: #1a1d24;
+  --color-surface-raised: #242830;
+  --color-surface-muted: #13151a;
+  --color-surface-tab: #2d323d;
 
   /* Text */
   --color-heading: #eef2fa;
   --color-body: #c8d4e4;
-  --color-muted: #9aa4b8;
+  --color-muted: #8892a8;
 
   /* Borders */
-  --color-border: #5a6478;
-  --color-border-muted: #4a5366;
+  --color-border: #3a4050;
+  --color-border-muted: #2a2f3a;
 
   /* Border weights — chunkier studio frames */
   --border-width: 2px;
@@ -33,33 +33,33 @@
   /* Accent — soft periwinkle */
   --color-accent: #9aafd9;
   --color-accent-hover: #b0c2e8;
-  --color-accent-subtle: #3a4458;
-  --color-accent-foreground: #2a3040;
+  --color-accent-subtle: #262d3e;
+  --color-accent-foreground: #1c212e;
 
   /* Warm — dusty lavender */
   --color-warm: #b4acd0;
   --color-warm-hover: #c4bce0;
-  --color-warm-subtle: #3d4258;
+  --color-warm-subtle: #292d3e;
   --color-warm-foreground: #eef2fa;
 
   /* Success — sea glass */
   --color-success: #8ec4b4;
-  --color-success-subtle: #354550;
+  --color-success-subtle: #1f2d30;
 
   /* Alert — soft mauve */
   --color-danger: #c8b0b8;
-  --color-danger-subtle: #453d48;
-  --color-danger-border: #6a5a62;
+  --color-danger-subtle: #2e2632;
+  --color-danger-border: #5a4a52;
 
   /* Links */
   --color-link: #9aafd9;
-  --color-link-subtle: #3a4458;
+  --color-link-subtle: #262d3e;
 
-  /* Sidebar — deeper dusk anchor */
-  --color-sidebar: #323948;
-  --color-sidebar-hover: #3d4455;
-  --color-sidebar-active: #4a5368;
-  --color-sidebar-border: #5a6478;
+  /* Sidebar — deep anchor */
+  --color-sidebar: #12141a;
+  --color-sidebar-hover: #1b1e26;
+  --color-sidebar-active: #242830;
+  --color-sidebar-border: #2a2f3a;
   --color-sidebar-heading: #eef2fa;
   --color-sidebar-body: #c8d4e4;
   --color-sidebar-muted: #9aa4b8;

@@ -157,6 +157,7 @@ export const DEV_MOCK_SOURCE_PROFILE: CVProfile = {
     linkedin: 'www.linkedin.com/in/anthondev/',
     location: 'Apure, Venezuela',
   },
+  projects: [],
   certifications: ['EFSET English Certificate C1 Proficient (EFSET)'],
 }
 

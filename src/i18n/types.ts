@@ -42,6 +42,25 @@ export type CvPreviewTranslations = {
   summary: string
   skills: string
   experience: string
+  education: string
+  institution: string
+  degree: string
+  addEducation: string
+  removeEducation: string
+  languages: string
+  addLanguage: string
+  languagePlaceholder: string
+  removeLanguage: string
+  projects: string
+  projectName: string
+  projectDescription: string
+  projectUrl: string
+  addProject: string
+  removeProject: string
+  certifications: string
+  addCertification: string
+  certificationPlaceholder: string
+  removeCertification: string
   empty: string
   addSkill: string
   skillPlaceholder: string

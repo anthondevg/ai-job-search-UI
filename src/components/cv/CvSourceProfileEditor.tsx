@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useCvProfileEditor } from '../../hooks/useCvProfileEditor'
 import { useTranslation } from '../../hooks/useTranslation'
-import type { CVProfile } from '../../types/cvProfile'
+import type { CVProfile, EducationItem, ProjectItem } from '../../types/cvProfile'
 import SkillBadge from '../SkillBadge'
 
 type CvSourceProfileEditorProps = {
@@ -232,10 +232,16 @@ export default function CvSourceProfileEditor({
   const [skillInput, setSkillInput] = useState('')
   const [editingBullet, setEditingBullet] = useState<EditingBullet | null>(null)
   const [isEditingSummary, setIsEditingSummary] = useState(false)
+  const [editingEducationIndex, setEditingEducationIndex] = useState<number | null>(null)
+  const [editingProjectIndex, setEditingProjectIndex] = useState<number | null>(null)
+  const [languageInput, setLanguageInput] = useState('')
+  const [certificationInput, setCertificationInput] = useState('')
 
   useEffect(() => {
     setEditingBullet(null)
     setIsEditingSummary(false)
+    setEditingEducationIndex(null)
+    setEditingProjectIndex(null)
   }, [recordId])
 
   const addSkill = (raw: string) => {
@@ -324,6 +330,98 @@ export default function CvSourceProfileEditor({
     if (isEditingBullet(editingBullet, experienceIndex, bulletIndex)) {
       setEditingBullet(null)
     }
+  }
+
+  const addLanguage = (raw: string) => {
+    const lang = normalizeSkill(raw)
+    if (!lang || hasSkill(draft.languages, lang)) return
+    updateDraft((prev) => ({
+      ...prev,
+      languages: [...prev.languages, lang],
+    }))
+    setLanguageInput('')
+  }
+
+  const removeLanguage = (index: number) => {
+    updateDraft((prev) => ({
+      ...prev,
+      languages: prev.languages.filter((_, i) => i !== index),
+    }))
+  }
+
+  const addCertification = (raw: string) => {
+    const cert = normalizeSkill(raw)
+    if (!cert || hasSkill(draft.certifications, cert)) return
+    updateDraft((prev) => ({
+      ...prev,
+      certifications: [...prev.certifications, cert],
+    }))
+    setCertificationInput('')
+  }
+
+  const removeCertification = (index: number) => {
+    updateDraft((prev) => ({
+      ...prev,
+      certifications: prev.certifications.filter((_, i) => i !== index),
+    }))
+  }
+
+  const setEducationField = (index: number, field: keyof EducationItem, value: string) => {
+    updateDraft((prev) => ({
+      ...prev,
+      education: prev.education.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item,
+      ),
+    }))
+  }
+
+  const addEducationItem = () => {
+    const newIndex = draft.education.length
+    updateDraft((prev) => ({
+      ...prev,
+      education: [
+        ...prev.education,
+        { institution: '', degree: '', startDate: '', endDate: '' },
+      ],
+    }))
+    setEditingEducationIndex(newIndex)
+  }
+
+  const removeEducationItem = (index: number) => {
+    updateDraft((prev) => ({
+      ...prev,
+      education: prev.education.filter((_, i) => i !== index),
+    }))
+    if (editingEducationIndex === index) setEditingEducationIndex(null)
+  }
+
+  const setProjectField = (index: number, field: keyof ProjectItem, value: string) => {
+    updateDraft((prev) => ({
+      ...prev,
+      projects: prev.projects.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item,
+      ),
+    }))
+  }
+
+  const addProjectItem = () => {
+    const newIndex = draft.projects.length
+    updateDraft((prev) => ({
+      ...prev,
+      projects: [
+        ...prev.projects,
+        { name: '', description: '', url: '', startDate: '', endDate: '' },
+      ],
+    }))
+    setEditingProjectIndex(newIndex)
+  }
+
+  const removeProjectItem = (index: number) => {
+    updateDraft((prev) => ({
+      ...prev,
+      projects: prev.projects.filter((_, i) => i !== index),
+    }))
+    if (editingProjectIndex === index) setEditingProjectIndex(null)
   }
 
   return (
@@ -495,6 +593,326 @@ export default function CvSourceProfileEditor({
               {t('pages.cv.preview.empty')}
             </p>
           )}
+        </section>
+
+        <section className="match-frame rounded-card border-border bg-surface-muted p-4 sm:col-span-2">
+          <h3 className="text-sm font-semibold text-heading">
+            {t('pages.cv.preview.education')}
+          </h3>
+          {draft.education.length > 0 ? (
+            <ul className="mt-3 space-y-3">
+              {draft.education.map((item, index) => (
+                <li
+                  key={`${item.institution}-${item.degree}-${index}`}
+                  className="border-b border-border-muted pb-3 last:border-b-0 last:pb-0"
+                >
+                  {editingEducationIndex === index ? (
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                      <input
+                        type="text"
+                        value={item.institution}
+                        onChange={(e) => setEducationField(index, 'institution', e.target.value)}
+                        placeholder={t('pages.cv.preview.institution')}
+                        className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <input
+                        type="text"
+                        value={item.degree}
+                        onChange={(e) => setEducationField(index, 'degree', e.target.value)}
+                        placeholder={t('pages.cv.preview.degree')}
+                        className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <input
+                        type="text"
+                        value={item.startDate}
+                        onChange={(e) => setEducationField(index, 'startDate', e.target.value)}
+                        placeholder={t('pages.cv.preview.education') + ' (start)'}
+                        className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <input
+                        type="text"
+                        value={item.endDate}
+                        onChange={(e) => setEducationField(index, 'endDate', e.target.value)}
+                        placeholder={t('pages.cv.preview.education') + ' (end)'}
+                        className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <div className="col-span-2 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditingEducationIndex(null)}
+                          className="rounded-control bg-accent px-4 py-2 text-xs font-medium text-accent-foreground transition-colors hover:bg-accent-hover"
+                        >
+                          Done
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeEducationItem(index)}
+                          className="rounded-control border border-border bg-surface-raised px-3 py-2 text-xs text-muted transition-colors hover:border-border-muted hover:text-danger"
+                        >
+                          {t('pages.cv.preview.removeEducation')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p className="font-medium text-heading">{item.institution || '—'}</p>
+                        <p className="text-sm text-body">{item.degree || '—'}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-mono text-xs text-muted">
+                          {item.startDate || '?'} – {item.endDate || '?'}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setEditingEducationIndex(index)}
+                          className="rounded-control border border-border bg-surface-raised px-2 py-1 text-xs text-muted transition-colors hover:border-border-muted"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeEducationItem(index)}
+                          className="rounded-control border border-border bg-surface-raised px-2 py-1 text-xs text-muted transition-colors hover:border-border-muted hover:text-danger"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-2 text-sm text-muted">
+              {t('pages.cv.preview.empty')}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={addEducationItem}
+            className="mt-3 rounded-control border border-dashed border-border px-3 py-1.5 text-xs font-medium text-body transition-colors hover:border-border-muted"
+          >
+            {t('pages.cv.preview.addEducation')}
+          </button>
+        </section>
+
+        <section className="match-frame rounded-card border-border bg-surface-muted p-4 sm:col-span-2">
+          <h3 className="text-sm font-semibold text-heading">
+            {t('pages.cv.preview.languages')}
+          </h3>
+          {draft.languages.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {draft.languages.map((lang, index) => (
+                <span key={`${lang}-${index}`} className="inline-flex items-center gap-1">
+                  <span className="match-chip match-chip-muted">{lang}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeLanguage(index)}
+                    className="rounded-control border border-border bg-surface-raised px-1.5 py-0.5 text-xs text-muted transition-colors hover:border-border-muted hover:text-danger"
+                    aria-label={t('pages.cv.preview.removeLanguage')}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-2 text-sm text-muted">
+              {t('pages.cv.preview.empty')}
+            </p>
+          )}
+          <form
+            onSubmit={(e) => { e.preventDefault(); addLanguage(languageInput) }}
+            className="mt-3 flex flex-wrap gap-2"
+          >
+            <input
+              type="text"
+              value={languageInput}
+              onChange={(e) => setLanguageInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  addLanguage(languageInput)
+                }
+              }}
+              placeholder={t('pages.cv.preview.languagePlaceholder')}
+              className="match-input match-frame min-w-0 flex-1 rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+            />
+            <button
+              type="submit"
+              disabled={!normalizeSkill(languageInput)}
+              className="shrink-0 rounded-control border border-border bg-surface-tab px-3 py-2 text-xs font-medium text-body transition-colors hover:border-border-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {t('pages.cv.preview.addLanguage')}
+            </button>
+          </form>
+        </section>
+
+        <section className="match-frame rounded-card border-border bg-surface-muted p-4 sm:col-span-2">
+          <h3 className="text-sm font-semibold text-heading">
+            {t('pages.cv.preview.projects')}
+          </h3>
+          {draft.projects.length > 0 ? (
+            <ul className="mt-3 space-y-3">
+              {draft.projects.map((item, index) => (
+                <li
+                  key={`${item.name}-${index}`}
+                  className="border-b border-border-muted pb-3 last:border-b-0 last:pb-0"
+                >
+                  {editingProjectIndex === index ? (
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                      <input
+                        type="text"
+                        value={item.name}
+                        onChange={(e) => setProjectField(index, 'name', e.target.value)}
+                        placeholder={t('pages.cv.preview.projectName')}
+                        className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <input
+                        type="text"
+                        value={item.url}
+                        onChange={(e) => setProjectField(index, 'url', e.target.value)}
+                        placeholder={t('pages.cv.preview.projectUrl')}
+                        className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <input
+                        type="text"
+                        value={item.startDate}
+                        onChange={(e) => setProjectField(index, 'startDate', e.target.value)}
+                        placeholder="Start date"
+                        className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <input
+                        type="text"
+                        value={item.endDate}
+                        onChange={(e) => setProjectField(index, 'endDate', e.target.value)}
+                        placeholder="End date"
+                        className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <textarea
+                        value={item.description}
+                        onChange={(e) => setProjectField(index, 'description', e.target.value)}
+                        placeholder={t('pages.cv.preview.projectDescription')}
+                        rows={3}
+                        className="match-input match-frame col-span-2 rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+                      />
+                      <div className="col-span-2 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditingProjectIndex(null)}
+                          className="rounded-control bg-accent px-4 py-2 text-xs font-medium text-accent-foreground transition-colors hover:bg-accent-hover"
+                        >
+                          Done
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeProjectItem(index)}
+                          className="rounded-control border border-border bg-surface-raised px-3 py-2 text-xs text-muted transition-colors hover:border-border-muted hover:text-danger"
+                        >
+                          {t('pages.cv.preview.removeProject')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p className="font-medium text-heading">{item.name || '—'}</p>
+                        {item.description && (
+                          <p className="mt-0.5 text-sm leading-relaxed text-body">{item.description}</p>
+                        )}
+                        {item.url && (
+                          <p className="mt-0.5 text-xs text-link">{item.url}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="shrink-0 font-mono text-xs text-muted">
+                          {item.startDate || '?'} – {item.endDate || '?'}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setEditingProjectIndex(index)}
+                          className="rounded-control border border-border bg-surface-raised px-2 py-1 text-xs text-muted transition-colors hover:border-border-muted"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeProjectItem(index)}
+                          className="rounded-control border border-border bg-surface-raised px-2 py-1 text-xs text-muted transition-colors hover:border-border-muted hover:text-danger"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-2 text-sm text-muted">
+              {t('pages.cv.preview.empty')}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={addProjectItem}
+            className="mt-3 rounded-control border border-dashed border-border px-3 py-1.5 text-xs font-medium text-body transition-colors hover:border-border-muted"
+          >
+            {t('pages.cv.preview.addProject')}
+          </button>
+        </section>
+
+        <section className="match-frame rounded-card border-border bg-surface-muted p-4 sm:col-span-2">
+          <h3 className="text-sm font-semibold text-heading">
+            {t('pages.cv.preview.certifications')}
+          </h3>
+          {draft.certifications.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {draft.certifications.map((cert, index) => (
+                <span key={`${cert}-${index}`} className="inline-flex items-center gap-1">
+                  <span className="match-chip match-chip-accent">{cert}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeCertification(index)}
+                    className="rounded-control border border-border bg-surface-raised px-1.5 py-0.5 text-xs text-muted transition-colors hover:border-border-muted hover:text-danger"
+                    aria-label={t('pages.cv.preview.removeCertification')}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-2 text-sm text-muted">
+              {t('pages.cv.preview.empty')}
+            </p>
+          )}
+          <form
+            onSubmit={(e) => { e.preventDefault(); addCertification(certificationInput) }}
+            className="mt-3 flex flex-wrap gap-2"
+          >
+            <input
+              type="text"
+              value={certificationInput}
+              onChange={(e) => setCertificationInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  addCertification(certificationInput)
+                }
+              }}
+              placeholder={t('pages.cv.preview.certificationPlaceholder')}
+              className="match-input match-frame min-w-0 flex-1 rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
+            />
+            <button
+              type="submit"
+              disabled={!normalizeSkill(certificationInput)}
+              className="shrink-0 rounded-control border border-border bg-surface-tab px-3 py-2 text-xs font-medium text-body transition-colors hover:border-border-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {t('pages.cv.preview.addCertification')}
+            </button>
+          </form>
         </section>
       </div>
     </div>
