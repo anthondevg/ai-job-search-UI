@@ -8,11 +8,25 @@ const locationEligibilityValues = [
   'ineligible',
 ] as const
 
+const warningFlagValues = [
+  'visa_sponsorship_required',
+  'us_timezone_restricted',
+  'us_only_remote',
+  'latam_excluded',
+  'global_remote',
+  'latam_friendly_remote',
+] as const
+
+const companySignalConfidenceValues = [
+  'stated_in_posting',
+  'inferred_from_knowledge',
+  'none',
+] as const
+
 export const profileCompatibilitySchema: Schema = {
   type: Type.OBJECT,
   properties: {
     skillsScore: { type: Type.NUMBER },
-    score: { type: Type.NUMBER },
     summary: { type: Type.STRING },
     strengths: {
       type: Type.ARRAY,
@@ -37,6 +51,17 @@ export const profileCompatibilitySchema: Schema = {
           type: Type.ARRAY,
           items: { type: Type.STRING },
         },
+        warningFlags: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.STRING,
+            enum: [...warningFlagValues],
+          },
+        },
+        companySignalConfidence: {
+          type: Type.STRING,
+          enum: [...companySignalConfidenceValues],
+        },
       },
       required: [
         'candidateLocation',
@@ -45,8 +70,10 @@ export const profileCompatibilitySchema: Schema = {
         'eligibility',
         'verdict',
         'restrictions',
+        'warningFlags',
+        'companySignalConfidence',
       ],
     },
   },
-  required: ['skillsScore', 'score', 'summary', 'strengths', 'gaps', 'location'],
+  required: ['skillsScore', 'summary', 'strengths', 'gaps', 'location'],
 }

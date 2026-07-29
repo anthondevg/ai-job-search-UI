@@ -3,6 +3,7 @@ import { useTranslation } from '../../hooks/useTranslation'
 import type {
   LocationEligibility,
   ProfileCompatibility,
+  WarningFlag,
 } from '../../types/compatibility'
 
 const RING_RADIUS = 54
@@ -44,17 +45,51 @@ function getScoreLabelKey(score: number) {
   return 'weak' as const
 }
 
-function getEligibilityTone(eligibility: LocationEligibility) {
+const DANGER_FLAGS: WarningFlag[] = [
+  'visa_sponsorship_required',
+  'us_timezone_restricted',
+  'us_only_remote',
+  'latam_excluded',
+]
+
+const POSITIVE_FLAGS: WarningFlag[] = [
+  'global_remote',
+  'latam_friendly_remote',
+]
+
+function isDangerFlag(flag: WarningFlag): boolean {
+  return DANGER_FLAGS.includes(flag)
+}
+
+function isPositiveFlag(flag: WarningFlag): boolean {
+  return POSITIVE_FLAGS.includes(flag)
+}
+
+function getEligibilityBadge(eligibility: LocationEligibility) {
   switch (eligibility) {
     case 'eligible':
-      return 'match-rail match-rail-success bg-success-subtle text-success'
+      return 'bg-success/20 text-success border border-success/40'
     case 'likely_eligible':
-      return 'match-rail match-rail-accent bg-accent-subtle text-accent'
+      return 'bg-accent/20 text-accent border border-accent/40'
     case 'unclear':
-      return 'match-frame border-border bg-surface-raised text-muted'
+      return 'bg-surface-tab text-muted border border-border'
     case 'unlikely':
     case 'ineligible':
-      return 'match-rail match-rail-danger bg-danger-subtle text-danger'
+      return 'bg-danger/20 text-danger border border-danger/40'
+  }
+}
+
+function getEligibilityRail(eligibility: LocationEligibility) {
+  switch (eligibility) {
+    case 'eligible':
+      return 'border-l-success'
+    case 'likely_eligible':
+      return 'border-l-accent'
+    case 'unclear':
+      return 'border-l-border'
+    case 'unlikely':
+    case 'ineligible':
+      return 'border-l-danger'
   }
 }
 
@@ -70,7 +105,6 @@ export default function ProfileCompatibilityCard({
   const ringOffset =
     RING_CIRCUMFERENCE - (animatedScore / 100) * RING_CIRCUMFERENCE
   const { location } = compatibility
-  const locationTone = getEligibilityTone(location.eligibility)
   const showSkillsBreakdown = compatibility.skillsScore !== compatibility.score
 
   useEffect(() => {
@@ -164,52 +198,101 @@ export default function ProfileCompatibilityCard({
             )}
           </div>
 
-          <div className={`rounded-control p-3 ${locationTone}`}>
-            <p className="text-xs font-medium uppercase tracking-wide opacity-80">
-              {t('pages.cv.generate.compatibility.location.title')}
-            </p>
-            <p className="mt-1 text-sm font-semibold">
-              {t(
-                `pages.cv.generate.compatibility.location.eligibility.${location.eligibility}`,
-              )}
-            </p>
-            <p className="mt-2 text-sm leading-relaxed">{location.verdict}</p>
+          <div className="match-frame rounded-card border-border bg-surface-muted/80">
+            <div className={`border-l-4 rounded-l-[calc(0.875rem-1px)] ${getEligibilityRail(location.eligibility)}`}>
+              <div className="p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                      {t('pages.cv.generate.compatibility.location.title')}
+                    </p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                      <span className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${getEligibilityBadge(location.eligibility)}`}>
+                        {t(`pages.cv.generate.compatibility.location.eligibility.${location.eligibility}`)}
+                      </span>
+                      <span className="text-xs text-muted">
+                        {location.jobLocation && `${location.jobLocation}`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-            <dl className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
-              <div>
-                <dt className="opacity-70">
-                  {t('pages.cv.generate.compatibility.location.candidate')}
-                </dt>
-                <dd className="font-medium">{location.candidateLocation}</dd>
-              </div>
-              <div>
-                <dt className="opacity-70">
-                  {t('pages.cv.generate.compatibility.location.job')}
-                </dt>
-                <dd className="font-medium">
-                  {location.jobLocation || '—'}
-                </dd>
-              </div>
-              <div className="sm:col-span-2">
-                <dt className="opacity-70">
-                  {t('pages.cv.generate.compatibility.location.remotePolicy')}
-                </dt>
-                <dd className="font-medium">
-                  {location.remotePolicy || '—'}
-                </dd>
-              </div>
-            </dl>
+                <p className="mt-3 text-sm leading-relaxed text-body">
+                  {location.verdict}
+                </p>
 
-            {location.restrictions.length > 0 && (
-              <ul className="mt-3 space-y-1 text-xs leading-relaxed">
-                {location.restrictions.map((item) => (
-                  <li key={item} className="flex gap-2">
-                    <span>•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+                {location.warningFlags.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {location.warningFlags.map((flag) => {
+                      const danger = isDangerFlag(flag)
+                      const positive = isPositiveFlag(flag)
+                      return (
+                        <span
+                          key={flag}
+                          className={
+                            danger
+                              ? 'inline-flex items-center gap-1 rounded border border-danger/30 bg-danger/10 px-2 py-0.5 text-xs font-medium text-danger'
+                              : positive
+                                ? 'inline-flex items-center gap-1 rounded border border-success/30 bg-success/10 px-2 py-0.5 text-xs font-medium text-success'
+                                : 'inline-flex items-center gap-1 rounded border border-border bg-surface-raised px-2 py-0.5 text-xs font-medium text-muted'
+                          }
+                        >
+                          {danger && <span className="text-[10px]">⚠</span>}
+                          {positive && <span className="text-[10px]">✓</span>}
+                          {t(`pages.cv.generate.compatibility.location.flags.${flag}`)}
+                        </span>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {location.companySignalConfidence === 'inferred_from_knowledge' && (
+                  <p className="mt-3 text-xs leading-relaxed text-amber-400">
+                    {t('pages.cv.generate.compatibility.location.signal.inferred_from_knowledge')}
+                  </p>
+                )}
+                {location.companySignalConfidence === 'stated_in_posting' && (
+                  <p className="mt-3 text-xs leading-relaxed text-accent">
+                    {t('pages.cv.generate.compatibility.location.signal.stated_in_posting')}
+                  </p>
+                )}
+
+                <div className="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs text-muted">
+                      {t('pages.cv.generate.compatibility.location.candidate')}
+                    </p>
+                    <p className="mt-0.5 font-medium text-heading">
+                      {location.candidateLocation}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted">
+                      {t('pages.cv.generate.compatibility.location.remotePolicy')}
+                    </p>
+                    <p className="mt-0.5 font-medium text-heading">
+                      {location.remotePolicy || '—'}
+                    </p>
+                  </div>
+                </div>
+
+                {location.restrictions.length > 0 && (
+                  <div className="mt-3 border-t border-border pt-3">
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                      Restrictions
+                    </p>
+                    <ul className="mt-1.5 space-y-1 text-sm leading-relaxed text-body">
+                      {location.restrictions.map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <span className="mt-0.5 shrink-0 text-muted">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {compatibility.strengths.length > 0 && (

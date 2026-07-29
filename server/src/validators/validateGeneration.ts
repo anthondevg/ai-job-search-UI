@@ -1,11 +1,19 @@
 import type { CoverLetterResult } from '../types/coverLetter.js'
 import type {
+  CompanySignalConfidence,
   LocationEligibility,
   ProfileCompatibility,
   ProfileCompatibilityLocation,
+  WarningFlag,
 } from '../types/compatibility.js'
 import type { JobDescriptionAnalysis } from '../types/jobDescription.js'
 import type { TailoredCvMeta, TailoredCvResult } from '../types/tailoredCv.js'
+import {
+  LOCATION_PENALTIES,
+  LOCATION_PENALTY_CAPS,
+  VISA_OVERRIDE,
+  VISA_UNLIKELY_OVERRIDE,
+} from '../config/locationPenalties.js'
 import { validateCvProfile } from './validateCvProfile.js'
 
 function asString(value: unknown): string {
@@ -58,6 +66,21 @@ const ELIGIBILITY_VALUES: LocationEligibility[] = [
   'ineligible',
 ]
 
+const VALID_WARNING_FLAGS: WarningFlag[] = [
+  'visa_sponsorship_required',
+  'us_timezone_restricted',
+  'us_only_remote',
+  'latam_excluded',
+  'global_remote',
+  'latam_friendly_remote',
+]
+
+const VALID_COMPANY_CONFIDENCE: CompanySignalConfidence[] = [
+  'stated_in_posting',
+  'inferred_from_knowledge',
+  'none',
+]
+
 function clampScore(value: unknown): number {
   const rawScore = typeof value === 'number' ? value : 0
   return Math.min(100, Math.max(0, Math.round(rawScore)))
@@ -66,19 +89,39 @@ function clampScore(value: unknown): number {
 function applyLocationPenalty(
   skillsScore: number,
   eligibility: LocationEligibility,
+  warningFlags: WarningFlag[],
 ): number {
-  switch (eligibility) {
-    case 'eligible':
-      return skillsScore
-    case 'likely_eligible':
-      return Math.round(skillsScore * 0.92)
-    case 'unclear':
-      return Math.round(skillsScore * 0.72)
-    case 'unlikely':
-      return Math.round(skillsScore * 0.45)
-    case 'ineligible':
-      return Math.min(Math.round(skillsScore * 0.2), 25)
+  const hasVisaFlag = warningFlags.includes('visa_sponsorship_required')
+
+  if (eligibility === 'ineligible' && hasVisaFlag) {
+    return Math.min(Math.round(skillsScore * VISA_OVERRIDE.multiplier), VISA_OVERRIDE.cap)
   }
+
+  const multiplier = LOCATION_PENALTIES[eligibility]
+  const raw = Math.round(skillsScore * multiplier)
+  const cap = LOCATION_PENALTY_CAPS[eligibility]
+
+  if (cap !== undefined) {
+    return Math.min(raw, cap)
+  }
+
+  if (eligibility === 'unlikely' && hasVisaFlag) {
+    return Math.min(Math.round(skillsScore * VISA_UNLIKELY_OVERRIDE.multiplier), VISA_UNLIKELY_OVERRIDE.cap)
+  }
+
+  return raw
+}
+
+function normalizeWarningFlags(value: unknown): WarningFlag[] {
+  const raw = asStringArray(value)
+  return raw.filter((flag): flag is WarningFlag =>
+    VALID_WARNING_FLAGS.includes(flag as WarningFlag),
+  )
+}
+
+function normalizeCompanyConfidence(value: unknown): CompanySignalConfidence {
+  const raw = asString(value) as CompanySignalConfidence
+  return VALID_COMPANY_CONFIDENCE.includes(raw) ? raw : 'none'
 }
 
 function normalizeLocation(value: unknown): ProfileCompatibilityLocation {
@@ -95,6 +138,8 @@ function normalizeLocation(value: unknown): ProfileCompatibilityLocation {
     eligibility,
     verdict: asString(record.verdict),
     restrictions: asStringArray(record.restrictions),
+    warningFlags: normalizeWarningFlags(record.warningFlags),
+    companySignalConfidence: normalizeCompanyConfidence(record.companySignalConfidence),
   }
 }
 
@@ -104,10 +149,10 @@ export function validateProfileCompatibility(data: unknown): ProfileCompatibilit
   }
 
   const record = data as Record<string, unknown>
-  const skillsScore = clampScore(record.skillsScore ?? record.score)
+  const skillsScore = clampScore(record.skillsScore)
   const location = normalizeLocation(record.location)
   const score = clampScore(
-    applyLocationPenalty(skillsScore, location.eligibility),
+    applyLocationPenalty(skillsScore, location.eligibility, location.warningFlags),
   )
 
   return {

@@ -214,6 +214,19 @@ export type CvGenerateCompatibilityLocationTranslations = {
     unlikely: string
     ineligible: string
   }
+  flags: {
+    visa_sponsorship_required: string
+    us_timezone_restricted: string
+    us_only_remote: string
+    latam_excluded: string
+    global_remote: string
+    latam_friendly_remote: string
+  }
+  signal: {
+    stated_in_posting: string
+    inferred_from_knowledge: string
+    none: string
+  }
 }
 
 export type CvGenerateCompatibilityTranslations = {
@@ -310,8 +323,10 @@ export type TranslationKey =
   | `pages.cv.generate.outputLanguage.${keyof CvGenerateOutputLanguageTranslations}`
   | `pages.cv.generate.compatibility.${Exclude<keyof CvGenerateCompatibilityTranslations, 'level' | 'location'>}`
   | `pages.cv.generate.compatibility.level.${keyof CvGenerateCompatibilityTranslations['level']}`
-  | `pages.cv.generate.compatibility.location.${Exclude<keyof CvGenerateCompatibilityLocationTranslations, 'eligibility'>}`
+  | `pages.cv.generate.compatibility.location.${Exclude<keyof CvGenerateCompatibilityLocationTranslations, 'eligibility' | 'flags' | 'signal'>}`
   | `pages.cv.generate.compatibility.location.eligibility.${keyof CvGenerateCompatibilityLocationTranslations['eligibility']}`
+  | `pages.cv.generate.compatibility.location.flags.${keyof CvGenerateCompatibilityLocationTranslations['flags']}`
+  | `pages.cv.generate.compatibility.location.signal.${keyof CvGenerateCompatibilityLocationTranslations['signal']}`
   | `pages.cv.generate.analysis.${keyof CvGenerateAnalysisTranslations}`
   | `pages.cv.generate.actions.${keyof CvGenerateActionsTranslations}`
   | `pages.cv.generate.tailored.${keyof CvGenerateTailoredTranslations}`

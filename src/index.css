@@ -102,6 +102,57 @@ body {
   min-height: 100svh;
 }
 
+@keyframes stepper-current-processing {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-accent) 8%, transparent);
+    transform: scale(1.06);
+  }
+}
+
+@keyframes stepper-step-complete {
+  0% {
+    transform: scale(0.72);
+  }
+
+  65% {
+    transform: scale(1.12);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes stepper-check {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.stepper-current-processing {
+  animation: stepper-current-processing 1.4s ease-in-out infinite;
+}
+
+.stepper-step-complete {
+  animation: stepper-step-complete 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stepper-check {
+  animation: stepper-check 260ms ease-out 120ms both;
+}
+
 ::selection {
   background-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
   color: var(--color-heading);

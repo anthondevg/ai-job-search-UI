@@ -252,6 +252,8 @@ export const DEV_MOCK_COMPATIBILITY: ProfileCompatibility = {
     verdict:
       'Remote-first role; strong technical fit. Verify work authorization requirements for a US healthcare company.',
     restrictions: ['Work authorization may be required'],
+    warningFlags: ['us_only_remote'],
+    companySignalConfidence: 'none',
   },
 }
 

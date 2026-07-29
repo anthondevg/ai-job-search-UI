@@ -20,6 +20,8 @@ export default function CvGenerateTab() {
     generateError,
     outputLanguage,
     currentStep,
+    isAnalyzing,
+    isGenerating,
   } = useCvGeneration()
 
   return (
@@ -33,7 +35,10 @@ export default function CvGenerateTab() {
         </div>
       )}
 
-      <CvGenerateStepper currentStep={currentStep} />
+      <CvGenerateStepper
+        currentStep={currentStep}
+        isProcessing={isAnalyzing || isGenerating}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start">
         <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
