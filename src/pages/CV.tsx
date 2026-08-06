@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from '../hooks/useTranslation'
 import CvGenerateTab from '../components/cv/CvGenerateTab'
 import CvImportTab from '../components/cv/CvImportTab'
@@ -6,7 +7,10 @@ import CvTabs, { type CvTabId } from '../components/cv/CvTabs'
 
 export default function CV() {
   const { t } = useTranslation()
-  const [activeTab, setActiveTab] = useState<CvTabId>('import')
+  const [searchParams] = useSearchParams()
+  const [activeTab, setActiveTab] = useState<CvTabId>(() =>
+    searchParams.get('tab') === 'generate' ? 'generate' : 'import',
+  )
 
   return (
     <div className="match-page flex flex-1 flex-col p-4 sm:p-6 lg:p-8">

@@ -5,5 +5,11 @@
     "src/index.ts": {
       "maxDuration": 300
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/job-market/sync/cron",
+      "schedule": "0 10 * * *"
+    }
+  ]
 }

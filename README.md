@@ -34,9 +34,9 @@ Two Chrome-style tabs:
 - Tailored CV preview with adaptation notes (matched keywords/skills, gaps)
 - PDF viewer and download via `@react-pdf/renderer`
 
-### Job Scraper Market (`/job-scraper-market`)
+### Job Market (`/job-scraper-market`)
 
-Placeholder page for browsing and managing job scraping sources (coming soon).
+Authorized aggregation from public Greenhouse, Lever, Ashby, and Remotive feeds, with personalized ranking, company discovery, an application pipeline, and handoff to the tailored CV workflow. Restricted sites are link-only or manually imported; there is no general-purpose scraper.
 
 ### App shell
 
@@ -94,6 +94,7 @@ Run the SQL migrations in your Supabase SQL editor (in order):
 1. `supabase/migrations/001_cv_profiles.sql` — creates `cv_profiles` table
 2. `supabase/migrations/002_disable_rls.sql` — legacy compatibility migration
 3. `supabase/migrations/003_auth_and_rls.sql` — adds `user_id` and enables fail-closed RLS
+4. `supabase/migrations/004_job_market.sql` — creates the job market, sources, preferences, pipeline, seed catalog, and sync lock
 
 Then open Supabase Dashboard → Authentication → Users and create your personal user. Disable public user signups in the Supabase Auth settings because the application only provides sign-in, not registration.
 
@@ -114,6 +115,7 @@ cp server/.env.example server/.env
 | `PORT` | API port (default `3001`) |
 | `FRONTEND_URL` | Frontend origin for CORS (default `http://localhost:5173`) |
 | `FRONTEND_URLS` | Optional comma-separated origins; takes precedence over `FRONTEND_URL` |
+| `CRON_SECRET` | Random 16+ character secret used by Vercel Cron to authenticate daily job sync |
 
 ### Configure the frontend
 
@@ -284,7 +286,7 @@ PDF files are limited to 4 MB so the complete multipart request remains below Ve
 - [x] PDF export for tailored CV
 - [x] Output language selection (English / Spanish)
 - [ ] Combine analyze + compatibility into a single Gemini call (reduce quota usage)
-- [ ] Job Scraper Market
+- [x] Authorized Job Market with ATS feeds, personalized ranking, and application pipeline
 - [x] Supabase Auth, `user_id` isolation, and RLS
 
 ## Public repository safety

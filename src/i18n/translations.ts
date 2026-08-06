@@ -42,7 +42,7 @@ export const translations: Record<Language, Translations> = {
     },
     nav: {
       cv: 'CV',
-      jobScraperMarket: 'Job Scraper Market',
+      jobScraperMarket: 'Job Market',
       profile: 'Profile',
     },
     sidebar: {
@@ -383,7 +383,7 @@ export const translations: Record<Language, Translations> = {
     },
     nav: {
       cv: 'CV',
-      jobScraperMarket: 'Mercado Job Scraper',
+      jobScraperMarket: 'Mercado laboral',
       profile: 'Perfil',
     },
     sidebar: {
