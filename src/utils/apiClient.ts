@@ -1,6 +1,7 @@
-import { getSessionId } from './session'
+import { getSupabaseBrowserClient } from '../services/supabaseBrowserClient'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? ''
+const LEGACY_SESSION_ID_STORAGE_KEY = 'ai-job-search-session-id'
 
 type ApiErrorResponse = {
   error: string
@@ -11,7 +12,18 @@ export async function apiFetch(
   options: RequestInit = {},
 ): Promise<Response> {
   const headers = new Headers(options.headers)
-  headers.set('X-Session-Id', getSessionId())
+  const { data, error } = await getSupabaseBrowserClient().auth.getSession()
+
+  if (error || !data.session?.access_token) {
+    throw new Error('Authentication is required')
+  }
+
+  headers.set('Authorization', `Bearer ${data.session.access_token}`)
+
+  const legacySessionId = localStorage.getItem(LEGACY_SESSION_ID_STORAGE_KEY)
+  if (legacySessionId) {
+    headers.set('X-Legacy-Session-Id', legacySessionId)
+  }
 
   if (options.body && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json')

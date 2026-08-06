@@ -1,4 +1,4 @@
-const MAX_PDF_SIZE_BYTES = 10 * 1024 * 1024
+const MAX_PDF_SIZE_BYTES = 4 * 1024 * 1024
 
 export type PdfValidationError = 'invalidType' | 'tooLarge' | 'empty'
 

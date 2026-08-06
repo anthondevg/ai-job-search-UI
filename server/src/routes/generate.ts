@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { sessionMiddleware, type SessionVariables } from '../middleware/session.js'
+import { authMiddleware, type AuthVariables } from '../middleware/auth.js'
 import {
   analyzeJobDescription,
   calculateProfileCompatibility,
@@ -12,9 +12,9 @@ import type { JobDescriptionAnalysis } from '../types/jobDescription.js'
 import { validateCvProfile } from '../validators/validateCvProfile.js'
 import { validateJobDescriptionAnalysis } from '../validators/validateGeneration.js'
 
-export const generateRoutes = new Hono<{ Variables: SessionVariables }>()
+export const generateRoutes = new Hono<{ Variables: AuthVariables }>()
 
-generateRoutes.use('*', sessionMiddleware)
+generateRoutes.use('*', authMiddleware)
 
 generateRoutes.post('/analyze-job', async (c) => {
   try {

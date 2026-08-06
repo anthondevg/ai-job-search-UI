@@ -15,12 +15,12 @@ Two Chrome-style tabs:
 
 **Import tab**
 
-- Drag & drop or browse for PDF (max 10 MB)
+- Drag & drop or browse for PDF (max 4 MB)
 - Structured extraction: personal info, summary, skills, experience, education, languages, certifications
 - Strict parse prompt — Gemini must not invent data; empty fields stay empty
 - CV library with active selection and delete
 - Profile preview marked as “source of truth”
-- Parsed profiles saved per browser session in Supabase
+- Parsed profiles saved per authenticated user in Supabase
 
 **Generate tab**
 
@@ -43,7 +43,7 @@ Placeholder page for browsing and managing job scraping sources (coming soon).
 - Dark theme with semantic design tokens
 - Collapsible sidebar and mobile drawer
 - English / Spanish UI with language switcher
-- Session-scoped API access via `X-Session-Id` (UUID v4 in `localStorage`)
+- Supabase email/password authentication with server-side JWT verification
 
 ## Tech stack
 
@@ -61,15 +61,16 @@ Browser (React)
   │     ├── cvStore              — CV records, active CV, upload state
   │     ├── jobDescriptionStore  — job text (localStorage)
   │     └── generateStore        — analysis, compatibility, tailored CV, loading/errors
-  ├── localStorage               — session ID, active CV ID, job description, output language
-  └── /api/* (Vite proxy) ──► Hono API (:3001)
-                                  ├── Gemini   — parse, analyze, compatibility, tailor
-                                  └── Supabase — cv_profiles table
+  ├── Supabase Auth              — login session and JWT
+  ├── localStorage               — active CV ID, job description, output language
+  └── /api/* ──► Hono API (Vercel Functions in production)
+                  ├── Gemini   — parse, analyze, compatibility, tailor
+                  └── Supabase — cv_profiles table
 ```
 
 **Anti-hallucination:** The parsed `CVProfile` is the source of truth. Tailored CV generation only reorders and rewrites existing content — it does not add skills, roles, or experience that are not in the profile.
 
-**Session model (MVP):** Each browser gets a UUID stored in `localStorage`. All CV CRUD is scoped to that `session_id`. There is no user authentication yet.
+**Authentication model:** Supabase Auth issues a JWT that the API verifies on every `/api/cv/*` request, and CV rows are scoped to the authenticated `user_id`.
 
 ## Getting started
 
@@ -91,7 +92,12 @@ npm install --prefix server
 Run the SQL migrations in your Supabase SQL editor (in order):
 
 1. `supabase/migrations/001_cv_profiles.sql` — creates `cv_profiles` table
-2. `supabase/migrations/002_disable_rls.sql` — only needed if the table was created before RLS was disabled in `001`
+2. `supabase/migrations/002_disable_rls.sql` — legacy compatibility migration
+3. `supabase/migrations/003_auth_and_rls.sql` — adds `user_id` and enables fail-closed RLS
+
+Then open Supabase Dashboard → Authentication → Users and create your personal user. Disable public user signups in the Supabase Auth settings because the application only provides sign-in, not registration.
+
+On the first authenticated CV list request, records saved by the previous browser-session implementation are automatically claimed by the authorized user when the legacy UUID is still present in that browser.
 
 ### Configure the server
 
@@ -107,6 +113,18 @@ cp server/.env.example server/.env
 | `SUPABASE_SERVICE_ROLE_KEY` | **Service role secret** — server-side only; never expose to the frontend |
 | `PORT` | API port (default `3001`) |
 | `FRONTEND_URL` | Frontend origin for CORS (default `http://localhost:5173`) |
+| `FRONTEND_URLS` | Optional comma-separated origins; takes precedence over `FRONTEND_URL` |
+
+### Configure the frontend
+
+Copy `.env.example` to `.env` and set:
+
+| Variable | Description |
+| --- | --- |
+| `VITE_API_URL` | API origin. Leave empty when using the local Vite proxy; use the backend Vercel URL in production. |
+| `VITE_SUPABASE_URL` | Supabase project URL used for authentication |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Browser-safe publishable/anon key; never use `service_role` here |
+| `VITE_DEV_MOCK_GENERATE` | Optional local generation mocks |
 
 ### Gemini models & quota
 
@@ -156,18 +174,46 @@ npm run lint
 npm run preview      # preview production build
 ```
 
+## Deploy to Vercel
+
+Create two Vercel projects from the same repository.
+
+### 1. Backend project
+
+- Root Directory: `server`
+- Framework Preset: Hono
+- Build settings: use the detected defaults
+- Environment variables: `GEMINI_API_KEY`, optional `GEMINI_MODEL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `FRONTEND_URL`
+
+`server/src/index.ts` is the Vercel entry point. `server/src/dev.ts` only opens a Node port for local development. Function duration is configured to 300 seconds in `server/vercel.json` for Gemini requests.
+
+### 2. Frontend project
+
+- Root Directory: repository root
+- Framework Preset: Vite
+- Environment variables: `VITE_API_URL` (the backend project URL), `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and optionally `VITE_DEV_MOCK_GENERATE=false`
+
+After the frontend receives its production URL, set that exact origin as `FRONTEND_URL` in the backend project and redeploy it. Use `FRONTEND_URLS` when more than one stable frontend origin is required. The root `vercel.json` provides the React Router SPA fallback.
+
+In the backend project's Vercel Firewall, add the single Hobby rate-limit rule to the expensive API paths (`/api/cv/parse`, `/api/cv/analyze-job`, `/api/cv/tailor`, and `/api/cv/cover-letter`). A fixed window such as 20 requests per minute per IP is ample for personal use.
+
+Do not expose `SUPABASE_SERVICE_ROLE_KEY` or `GEMINI_API_KEY` in variables prefixed with `VITE_`.
+
 ## API
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `GET` | `/health` | Health check |
-| `GET` | `/api/cv` | List saved CV profiles for the session |
+| `GET` | `/api/cv` | List saved CV profiles for the authenticated user |
 | `POST` | `/api/cv/parse` | Upload a PDF (`multipart/form-data`, field `file`) and parse + save |
+| `PATCH` | `/api/cv/:id` | Update a saved CV profile |
 | `DELETE` | `/api/cv/:id` | Delete a saved CV profile |
 | `POST` | `/api/cv/analyze-job` | Analyze job description; optional `sourceProfile` for compatibility scoring |
 | `POST` | `/api/cv/tailor` | Generate tailored CV from `sourceProfile`, `jobDescription`, `analysis`, and optional `outputLanguage` (`en` \| `es`) |
 
-All `/api/cv` routes require header `X-Session-Id: <uuid-v4>`.
+All `/api/cv` routes require `Authorization: Bearer <supabase-access-token>`. The frontend adds it automatically.
+
+PDF files are limited to 4 MB so the complete multipart request remains below Vercel's 4.5 MB function payload limit.
 
 **`POST /api/cv/analyze-job` body:**
 
@@ -206,12 +252,12 @@ All `/api/cv` routes require header `X-Session-Id: <uuid-v4>`.
 │   ├── services/                 # cvProfileService, cvGenerateService
 │   ├── stores/                   # cvStore, jobDescriptionStore, generateStore
 │   ├── types/                    # CV profile, job description, tailored CV, compatibility
-│   └── utils/                    # session, PDF validation, downloadCvPdf, cvPdfLabels
+│   └── utils/                    # API client, PDF validation, downloadCvPdf, cvPdfLabels
 ├── server/                       # Hono API
 │   └── src/
 │       ├── routes/               # cv + generate routes
 │       ├── services/             # Gemini, Supabase, CV persistence
-│       ├── middleware/           # session validation
+│       ├── middleware/           # Supabase JWT authentication
 │       ├── schemas/              # Gemini JSON schemas
 │       ├── prompts/              # parse, analyze, compatibility, tailor prompts
 │       └── validators/
@@ -239,7 +285,7 @@ All `/api/cv` routes require header `X-Session-Id: <uuid-v4>`.
 - [x] Output language selection (English / Spanish)
 - [ ] Combine analyze + compatibility into a single Gemini call (reduce quota usage)
 - [ ] Job Scraper Market
-- [ ] Optional: migrate from `session_id` to Supabase Auth / `user_id`
+- [x] Supabase Auth, `user_id` isolation, and RLS
 
 ## Public repository safety
 
@@ -262,13 +308,13 @@ All `/api/cv` routes require header `X-Session-Id: <uuid-v4>`.
 3. **Never commit** `server/.env`, API keys, or Supabase secret keys.
 4. **Add a license** if you want others to know usage terms (no `LICENSE` file yet).
 
-### Security limitations (by design in this MVP)
+### Deployment security
 
 These are not blockers for open-sourcing the code, but matter if you **deploy** a public instance:
 
-- **No user authentication** — isolation is a client-generated session UUID, not a login.
-- **RLS disabled** on `cv_profiles` — access control is enforced in the API (`session_id` filter), not at the database row level.
-- **No rate limiting** on upload/parse/generate endpoints — add before exposing to untrusted traffic.
+- **Authentication required** — the API verifies Supabase JWT signatures before serving protected routes.
+- **RLS enabled** — browser keys have no table policies; persistence uses the server-only service role after authentication.
+- **Rate limiting is platform configuration** — publish the documented Vercel WAF rule after deploying the backend.
 - **CORS** is restricted to `FRONTEND_URL` — set this correctly in production.
 - **CV PDFs and job descriptions** are sent to Google Gemini — review [Google’s data policies](https://ai.google.dev/gemini-api/terms) for your use case.
 

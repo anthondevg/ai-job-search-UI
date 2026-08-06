@@ -1,7 +1,8 @@
 import { Hono } from 'hono'
-import { sessionMiddleware, type SessionVariables } from '../middleware/session.js'
+import { authMiddleware, type AuthVariables } from '../middleware/auth.js'
 import { parseCvFromPdf } from '../services/geminiService.js'
 import {
+  claimLegacyCvProfiles,
   createCvProfile,
   deleteCvProfile,
   listCvProfiles,
@@ -9,15 +10,24 @@ import {
 } from '../services/cvProfileService.js'
 import { validateCvProfile } from '../validators/validateCvProfile.js'
 
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
+// Vercel Functions cap the complete request payload at 4.5 MB. Keep enough
+// headroom for multipart/form-data headers and boundaries.
+const MAX_FILE_SIZE_BYTES = 4 * 1024 * 1024
+const LEGACY_SESSION_ID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
-export const cvRoutes = new Hono<{ Variables: SessionVariables }>()
+export const cvRoutes = new Hono<{ Variables: AuthVariables }>()
 
-cvRoutes.use('*', sessionMiddleware)
+cvRoutes.use('*', authMiddleware)
 
 cvRoutes.get('/', async (c) => {
   try {
-    const records = await listCvProfiles(c.get('sessionId'))
+    const legacySessionId = c.req.header('X-Legacy-Session-Id')
+    if (legacySessionId && LEGACY_SESSION_ID_REGEX.test(legacySessionId)) {
+      await claimLegacyCvProfiles(c.get('userId'), legacySessionId)
+    }
+
+    const records = await listCvProfiles(c.get('userId'))
     return c.json({ records })
   } catch (error) {
     console.error('CV list error:', error)
@@ -47,18 +57,20 @@ cvRoutes.post('/parse', async (c) => {
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      return c.json({ error: 'PDF file must be 10 MB or smaller' }, 400)
+      return c.json({ error: 'PDF file must be 4 MB or smaller' }, 400)
     }
 
-    const arrayBuffer = await file.arrayBuffer()
-    const pdfBuffer = Buffer.from(arrayBuffer)
-
+    const pdfBuffer = Buffer.from(await file.arrayBuffer())
     if (pdfBuffer.length === 0) {
       return c.json({ error: 'The uploaded PDF file is empty' }, 400)
     }
 
+    if (pdfBuffer.subarray(0, 5).toString('ascii') !== '%PDF-') {
+      return c.json({ error: 'The uploaded file is not a valid PDF' }, 400)
+    }
+
     const profile = await parseCvFromPdf(pdfBuffer, file.type)
-    const record = await createCvProfile(c.get('sessionId'), file.name, profile)
+    const record = await createCvProfile(c.get('userId'), file.name, profile)
 
     return c.json({ record })
   } catch (error) {
@@ -84,7 +96,7 @@ cvRoutes.patch('/:id', async (c) => {
     const body = await c.req.json()
     const profile = validateCvProfile(body.profile)
     const record = await updateCvProfile(
-      c.get('sessionId'),
+      c.get('userId'),
       c.req.param('id'),
       profile,
     )
@@ -114,7 +126,7 @@ cvRoutes.patch('/:id', async (c) => {
 
 cvRoutes.delete('/:id', async (c) => {
   try {
-    await deleteCvProfile(c.get('sessionId'), c.req.param('id'))
+    await deleteCvProfile(c.get('userId'), c.req.param('id'))
     return c.json({ success: true })
   } catch (error) {
     console.error('CV delete error:', error)

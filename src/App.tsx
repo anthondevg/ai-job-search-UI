@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import CV from './pages/CV'
 import JobScraperMarket from './pages/JobScraperMarket'
+import Profile from './pages/Profile'
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
           <Route path="cv" element={<CV />} />
           <Route path="generate-cv" element={<Navigate to="/cv" replace />} />
           <Route path="job-scraper-market" element={<JobScraperMarket />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>
     </BrowserRouter>

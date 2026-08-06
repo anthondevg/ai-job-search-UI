@@ -1,14 +1,34 @@
-import { serve } from '@hono/node-server'
-import { app } from './app.js'
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { secureHeaders } from 'hono/secure-headers'
+import { cvRoutes } from './routes/cv.js'
+import { generateRoutes } from './routes/generate.js'
 
-const port = Number(process.env.PORT ?? 3001)
-
-serve(
-  {
-    fetch: app.fetch,
-    port,
-  },
-  (info) => {
-    console.log(`Server running on http://localhost:${info.port}`)
-  },
+const frontendUrls = (
+  process.env.FRONTEND_URLS ??
+  process.env.FRONTEND_URL ??
+  'http://localhost:5173'
 )
+  .split(',')
+  .map((url) => url.trim())
+  .filter(Boolean)
+
+export const app = new Hono()
+
+app.use('*', secureHeaders())
+
+app.use(
+  '*',
+  cors({
+    origin: frontendUrls,
+    allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Authorization', 'Content-Type', 'X-Legacy-Session-Id'],
+  }),
+)
+
+app.get('/health', (c) => c.json({ status: 'ok' }))
+
+app.route('/api/cv', cvRoutes)
+app.route('/api/cv', generateRoutes)
+
+export default app

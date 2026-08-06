@@ -9,12 +9,13 @@ export default function CV() {
   const [activeTab, setActiveTab] = useState<CvTabId>('import')
 
   return (
-    <div className="flex flex-1 flex-col p-4 sm:p-6 lg:p-8">
-      <header className="mb-4 border-b border-border pb-4 sm:mb-6 sm:pb-6 lg:mb-8">
-        <h1 className="font-display text-xl font-semibold text-heading sm:text-2xl">
+    <div className="match-page flex flex-1 flex-col p-4 sm:p-6 lg:p-8">
+      <header className="match-page-header mb-6 pb-5 sm:mb-8 sm:pb-7">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">Career workspace / 01</p>
+        <h1 className="mt-2 font-display text-3xl font-semibold text-heading sm:text-4xl">
           {t('pages.cv.title')}
         </h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
           {t('pages.cv.description')}
         </p>
       </header>

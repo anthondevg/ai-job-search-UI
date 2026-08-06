@@ -263,15 +263,72 @@ export type CvGenerateTranslations = {
   hints: CvGenerateHintsTranslations
 }
 
+export type ProfileTranslations = {
+  title: string
+  description: string
+  identity: string
+  account: string
+  fullName: string
+  role: string
+  location: string
+  linkedin: string
+  portfolio: string
+  email: string
+  emailHint: string
+  password: string
+  passwordHint: string
+  newPassword: string
+  saveProfile: string
+  saveEmail: string
+  savePassword: string
+  saving: string
+  saved: string
+  emailConfirmation: string
+  initials: string
+  errors: {
+    save: string
+    passwordLength: string
+  }
+}
+
 export type Translations = {
   app: {
     name: string
     tagline: string
     version: string
   }
+  auth: {
+    title: string
+    description: string
+    email: string
+    password: string
+    signIn: string
+    signingIn: string
+    signInFailed: string
+    signOut: string
+    loading: string
+    eyebrow: string
+    statement: string
+    secureAccess: string
+    analyze: string
+    adapt: string
+    apply: string
+    landingEyebrow: string
+    landingTitle: string
+    landingDescription: string
+    sourceTitle: string
+    sourceDescription: string
+    matchTitle: string
+    matchDescription: string
+    documentsTitle: string
+    documentsDescription: string
+    privacyTitle: string
+    privacyDescription: string
+  }
   nav: {
     cv: string
     jobScraperMarket: string
+    profile: string
   }
   sidebar: {
     expand: string
@@ -287,6 +344,7 @@ export type Translations = {
     es: string
   }
   pages: {
+    profile: ProfileTranslations
     cv: {
       title: string
       description: string
@@ -307,6 +365,7 @@ export type Translations = {
 
 export type TranslationKey =
   | `app.${keyof Translations['app']}`
+  | `auth.${keyof Translations['auth']}`
   | `nav.${keyof Translations['nav']}`
   | `sidebar.${keyof Translations['sidebar']}`
   | `layout.${keyof Translations['layout']}`
@@ -337,4 +396,6 @@ export type TranslationKey =
   | `pages.cv.generate.empty.${keyof CvGenerateEmptyTranslations}`
   | `pages.cv.generate.insights.${keyof CvGenerateInsightsTranslations}`
   | `pages.cv.generate.hints.${keyof CvGenerateHintsTranslations}`
+  | `pages.profile.${Exclude<keyof ProfileTranslations, 'errors'>}`
+  | `pages.profile.errors.${keyof ProfileTranslations['errors']}`
   | `pages.jobScraperMarket.${keyof Translations['pages']['jobScraperMarket']}`

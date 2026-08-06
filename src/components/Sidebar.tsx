@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from '../hooks/useTranslation'
+import { useAuth } from '../auth/useAuth'
 import AppLogo, { AppLogoMark } from './AppLogo'
 import LanguageSwitcher from './LanguageSwitcher'
 
@@ -36,6 +37,16 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    to: '/profile',
+    labelKey: 'nav.profile' as const,
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-5 shrink-0">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21a8 8 0 0 1 16 0" />
+      </svg>
+    ),
+  },
 ]
 
 export default function Sidebar({
@@ -45,6 +56,7 @@ export default function Sidebar({
   onMobileClose,
 }: SidebarProps) {
   const { t } = useTranslation()
+  const { signOut } = useAuth()
   const showLabels = !collapsed || mobileOpen
 
   return (
@@ -139,7 +151,7 @@ export default function Sidebar({
                 title={!showLabels ? label : undefined}
                 onClick={onMobileClose}
                 className={({ isActive }) =>
-                  `mx-0.5 flex items-center gap-3 rounded-card px-3 py-2.5 text-sm font-medium transition-colors ${
+                    `mx-0.5 flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium transition-colors ${
                     showLabels ? '' : 'justify-center'
                   } ${
                     isActive
@@ -159,10 +171,32 @@ export default function Sidebar({
           {showLabels ? (
             <>
               <LanguageSwitcher variant="sidebar" />
+              <button
+                type="button"
+                onClick={() => void signOut().catch(console.error)}
+                className="mt-3 w-full rounded-control border border-sidebar-border px-3 py-2 text-left text-xs font-medium text-sidebar-muted transition hover:bg-sidebar-hover hover:text-sidebar-heading"
+              >
+                {t('auth.signOut')}
+              </button>
               <p className="mt-3 text-xs text-sidebar-muted">{t('app.version')}</p>
             </>
           ) : (
-            <LanguageSwitcher compact variant="sidebar" />
+            <div className="space-y-3">
+              <LanguageSwitcher compact variant="sidebar" />
+              <button
+                type="button"
+                title={t('auth.signOut')}
+                aria-label={t('auth.signOut')}
+                onClick={() => void signOut().catch(console.error)}
+                className="flex size-9 items-center justify-center rounded-control text-sidebar-muted transition hover:bg-sidebar-hover hover:text-sidebar-heading"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4">
+                  <path d="M10 17l5-5-5-5" />
+                  <path d="M15 12H3" />
+                  <path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5" />
+                </svg>
+              </button>
+            </div>
           )}
         </div>
       </aside>

@@ -4,7 +4,7 @@ import { getSupabaseClient } from './supabaseClient.js'
 
 export type CvProfileRow = {
   id: string
-  session_id: string
+  user_id: string
   file_name: string
   profile: CVProfile
   created_at: string
@@ -28,7 +28,7 @@ function mapRow(row: CvProfileRow): SavedCvRecord {
 
 function formatSupabaseError(error: PostgrestError): string {
   if (error.code === '42501') {
-    return 'Supabase blocked the request (RLS). Use the service_role key in server/.env and run supabase/migrations/002_disable_rls.sql'
+    return 'Supabase blocked the server request (RLS). Verify SUPABASE_SERVICE_ROLE_KEY and run supabase/migrations/003_auth_and_rls.sql'
   }
 
   if (error.code === '42P01') {
@@ -43,7 +43,7 @@ function formatSupabaseError(error: PostgrestError): string {
 }
 
 export async function createCvProfile(
-  sessionId: string,
+  userId: string,
   fileName: string,
   profile: CVProfile,
 ): Promise<SavedCvRecord> {
@@ -52,11 +52,11 @@ export async function createCvProfile(
   const { data, error } = await supabase
     .from('cv_profiles')
     .insert({
-      session_id: sessionId,
+      user_id: userId,
       file_name: fileName,
       profile,
     })
-    .select('id, session_id, file_name, profile, created_at')
+    .select('id, user_id, file_name, profile, created_at')
     .single()
 
   if (error || !data) {
@@ -66,13 +66,13 @@ export async function createCvProfile(
   return mapRow(data as CvProfileRow)
 }
 
-export async function listCvProfiles(sessionId: string): Promise<SavedCvRecord[]> {
+export async function listCvProfiles(userId: string): Promise<SavedCvRecord[]> {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
     .from('cv_profiles')
-    .select('id, session_id, file_name, profile, created_at')
-    .eq('session_id', sessionId)
+    .select('id, user_id, file_name, profile, created_at')
+    .eq('user_id', userId)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -82,8 +82,23 @@ export async function listCvProfiles(sessionId: string): Promise<SavedCvRecord[]
   return (data as CvProfileRow[]).map(mapRow)
 }
 
-export async function updateCvProfile(
+export async function claimLegacyCvProfiles(
+  userId: string,
   sessionId: string,
+): Promise<void> {
+  const { error } = await getSupabaseClient()
+    .from('cv_profiles')
+    .update({ user_id: userId, session_id: null })
+    .eq('session_id', sessionId)
+    .is('user_id', null)
+
+  if (error) {
+    throw new Error(formatSupabaseError(error))
+  }
+}
+
+export async function updateCvProfile(
+  userId: string,
   id: string,
   profile: CVProfile,
 ): Promise<SavedCvRecord> {
@@ -93,8 +108,8 @@ export async function updateCvProfile(
     .from('cv_profiles')
     .update({ profile })
     .eq('id', id)
-    .eq('session_id', sessionId)
-    .select('id, session_id, file_name, profile, created_at')
+    .eq('user_id', userId)
+    .select('id, user_id, file_name, profile, created_at')
     .single()
 
   if (error) {
@@ -109,7 +124,7 @@ export async function updateCvProfile(
 }
 
 export async function deleteCvProfile(
-  sessionId: string,
+  userId: string,
   id: string,
 ): Promise<void> {
   const supabase = getSupabaseClient()
@@ -118,7 +133,7 @@ export async function deleteCvProfile(
     .from('cv_profiles')
     .delete({ count: 'exact' })
     .eq('id', id)
-    .eq('session_id', sessionId)
+    .eq('user_id', userId)
 
   if (error) {
     throw new Error(formatSupabaseError(error))
