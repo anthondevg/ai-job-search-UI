@@ -16,6 +16,8 @@ export async function fetchJobs(params: {
   search?: string
   provider?: string
   pipeline?: string
+  eligibility?: string
+  relevance?: string
   cursor?: string | null
   profileId?: string | null
   limit?: number

@@ -65,27 +65,48 @@ function companyName(source: SourceRow): string {
 
 export function textFromHtml(value: unknown): string {
   if (typeof value !== 'string') return ''
-  return value
+  let decoded = value
+  for (let pass = 0; pass < 3; pass += 1) {
+    const next = decoded
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;|&apos;/gi, "'")
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)))
+      .replace(/&#x([0-9a-f]+);/gi, (_, code: string) => String.fromCodePoint(Number.parseInt(code, 16)))
+    if (next === decoded) break
+    decoded = next
+  }
+  return decoded
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<br\s*\/?\s*>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '\n• ')
+    .replace(/<\/(p|div|h[1-6]|li|ul|ol|section|article)>/gi, '\n')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
-    .replace(/\s+/g, ' ')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/ *\n */g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
     .trim()
     .slice(0, 50_000)
 }
 
 export function classifyEligibility(location: string, description = ''): JobEligibility {
-  const value = `${location} ${description}`.toLowerCase()
-  if (/worldwide|anywhere|global remote|work from anywhere/.test(value)) return 'global'
-  if (/latin america|latam|south america|americas/.test(value)) return 'latam'
-  if (/relocation|visa sponsor|sponsorship available/.test(value)) return 'relocation'
-  if (/us only|united states only|must reside in|work authorization required|no sponsorship/.test(value)) return 'restricted'
+  const locationValue = location.toLowerCase().replace(/\s+/g, ' ').trim()
+  const descriptionValue = description.toLowerCase().replace(/\s+/g, ' ').trim()
+  const value = `${locationValue} ${descriptionValue}`
+  const explicitGlobal = /^(worldwide|global|anywhere)$/.test(locationValue) || /remote\s*[-–—|/]?\s*(worldwide|global|anywhere)|worldwide\s*[-–—|/]?\s*remote|open to (candidates|applicants) (from )?(anywhere|worldwide)|work from anywhere|can be based anywhere/.test(value)
+  if (explicitGlobal) return 'global'
+  if (/latin america|latam|south america|remote[^.]{0,30}americas|americas[^.]{0,30}remote/.test(value)) return 'latam'
+  if (/visa sponsor(ship)? (is )?(available|offered|provided)|we (can |do )?sponsor visas|immigration sponsorship (is )?(available|offered)|work visa support (is )?(available|offered)/.test(descriptionValue)) return 'relocation'
+  if (/relocation (support|assistance|package|available|offered)/.test(descriptionValue)) return 'unknown'
+  const crossLocationReview = /applying for this role from a different location|candidates? from other locations|other hiring locations|location may be flexible|additional locations may be considered/.test(descriptionValue)
+  if (crossLocationReview) return 'unknown'
+  if (/us only|united states only|must (reside|be based|live) in|work authorization required|no (visa )?sponsorship|remote within|only (hire|hiring) in/.test(value)) return 'restricted'
+  const genericLocation = /^(remote|hybrid|multiple locations|various locations|)$/.test(locationValue)
+  if (locationValue && !genericLocation) return 'restricted'
   return 'unknown'
 }
 
@@ -314,20 +335,37 @@ async function preferencesFor(userId: string): Promise<JobSearchPreferences> {
   }
 }
 
-function scoreJob(job: JobRow, preferences: JobSearchPreferences, cvSkills: string[]) {
-  const haystack = `${job.title} ${job.description}`.toLowerCase()
+function containsTerm(text: string, term: string) {
+  const normalize = (value: string) =>
+    value.toLowerCase().replace(/[^a-z0-9+#]+/g, ' ').trim()
+  const normalizedText = ` ${normalize(text)} `
+  const normalizedTerm = normalize(term)
+  return Boolean(normalizedTerm) && normalizedText.includes(` ${normalizedTerm} `)
+}
+
+export function scoreJob(job: JobRow, preferences: JobSearchPreferences, cvSkills: string[]) {
+  const titleText = job.title.toLowerCase()
+  const optionalSection = job.description.search(/bonus points|nice to have|preferred qualifications|preferred skills|desirable|what would make you stand out/i)
+  const requiredDescription = optionalSection >= 0 ? job.description.slice(0, optionalSection) : job.description
+  const optionalDescription = optionalSection >= 0 ? job.description.slice(optionalSection) : ''
+  const requiredHaystack = `${job.title} ${requiredDescription}`.toLowerCase()
+  const optionalHaystack = optionalDescription.toLowerCase()
   const selectedTerms = preferences.roleFamilies.flatMap((role) => ROLE_TERMS[role] ?? [role.toLowerCase()])
-  const roleScore = selectedTerms.some((term) => haystack.includes(term.toLowerCase())) ? 35 : 0
+  const roleScore = selectedTerms.some((term) => containsTerm(titleText, term)) ? 35 : 0
   const skills = [...new Set([...preferences.skills, ...cvSkills])].filter(Boolean)
-  const matchedSkills = skills.filter((skill) => haystack.includes(skill.toLowerCase()))
-  const skillScore = skills.length ? Math.min(35, Math.round(35 * matchedSkills.length / Math.min(skills.length, 8))) : 18
+  const requiredMatchedSkills = skills.filter((skill) => containsTerm(requiredHaystack, skill))
+  const optionalMatchedSkills = skills.filter((skill) => !requiredMatchedSkills.includes(skill) && containsTerm(optionalHaystack, skill))
+  const matchedSkills = [...requiredMatchedSkills, ...optionalMatchedSkills]
+  const weightedMatches = requiredMatchedSkills.length + optionalMatchedSkills.length * 0.1
+  const skillScore = skills.length ? Math.min(35, Math.round(35 * weightedMatches / Math.min(skills.length, 8))) : 18
   const locationScore = job.eligibility === 'global' || job.eligibility === 'latam' ? (preferences.remote ? 20 : 10)
-    : job.eligibility === 'relocation' && preferences.relocation ? 18 : job.eligibility === 'restricted' ? 0 : 8
+    : job.eligibility === 'relocation' && preferences.relocation ? 18 : job.eligibility === 'restricted' ? 0 : 4
   const ageDays = Math.max(0, (Date.now() - Date.parse(job.posted_at ?? job.first_seen_at)) / 86_400_000)
   const freshnessScore = ageDays <= 3 ? 10 : ageDays <= 14 ? 7 : ageDays <= 30 ? 4 : 1
   const reasons = []
   if (roleScore) reasons.push('Target role match')
-  if (matchedSkills.length) reasons.push(`${matchedSkills.length} matching skill${matchedSkills.length === 1 ? '' : 's'}`)
+  if (requiredMatchedSkills.length) reasons.push(`${requiredMatchedSkills.length} required skill${requiredMatchedSkills.length === 1 ? '' : 's'} matched`)
+  if (optionalMatchedSkills.length) reasons.push(`${optionalMatchedSkills.length} optional skill${optionalMatchedSkills.length === 1 ? '' : 's'} matched`)
   if (locationScore >= 18) reasons.push(job.eligibility === 'relocation' ? 'Relocation signal' : 'Remote location fit')
   if (freshnessScore >= 7) reasons.push('Recently posted')
   return { score: Math.min(100, roleScore + skillScore + locationScore + freshnessScore), roleScore, skillScore, locationScore, freshnessScore, matchedSkills, reasons }
@@ -352,7 +390,7 @@ function mapJob(row: JobRow, state: { status: JobPipelineStatus; notes: string }
   }
 }
 
-export async function listJobs(userId: string, options: { search?: string; provider?: string; pipeline?: string; cursor?: number; limit?: number; profileId?: string | null }) {
+export async function listJobs(userId: string, options: { search?: string; provider?: string; pipeline?: string; eligibility?: string; relevance?: string; cursor?: number; limit?: number; profileId?: string | null }) {
   const supabase = getSupabaseClient()
   let jobsQuery = supabase.from('jobs').select('*').order('posted_at', { ascending: false, nullsFirst: false }).limit(1000)
   if (!options.pipeline || options.pipeline === 'all') jobsQuery = jobsQuery.eq('status', 'active')
@@ -367,8 +405,16 @@ export async function listJobs(userId: string, options: { search?: string; provi
   let mapped = ((jobs ?? []) as JobRow[])
     .filter((job) => !job.created_by_user_id || job.created_by_user_id === userId)
     .filter((job) => !options.provider || options.provider === 'all' || job.provider === options.provider)
+    .filter((job) => !options.eligibility || options.eligibility === 'all'
+      || (options.eligibility === 'eligible' && ['global', 'latam', 'relocation'].includes(job.eligibility))
+      || (options.eligibility === 'review' && job.eligibility === 'unknown'))
     .filter((job) => !search || `${job.title} ${job.company_name} ${job.location} ${job.description}`.toLowerCase().includes(search))
-    .map((job) => mapJob(job, stateMap.get(job.id), scoreJob(job, preferences, cvSkills)))
+    .map((job) => {
+      const description = textFromHtml(job.description)
+      const classifiedJob = { ...job, description, eligibility: classifyEligibility(job.location, description) }
+      return mapJob(classifiedJob, stateMap.get(job.id), scoreJob(classifiedJob, preferences, cvSkills))
+    })
+    .filter((job) => !options.relevance || options.relevance === 'all' || (options.relevance === 'matched' && job.match.roleScore > 0))
     .filter((job) => !options.pipeline || options.pipeline === 'all' || (options.pipeline === 'tracked' ? Boolean(job.pipelineStatus) : job.pipelineStatus === options.pipeline))
     .sort((a, b) => b.match.score - a.match.score || Date.parse(b.postedAt ?? b.firstSeenAt) - Date.parse(a.postedAt ?? a.firstSeenAt))
   const total = mapped.length
@@ -386,7 +432,9 @@ export async function getJob(userId: string, id: string, profileId?: string | nu
     preferencesFor(userId), cvSkillsFor(userId, profileId),
   ])
   if (error || !data) throw new Error('Job not found')
-  const row = data as JobRow
+  const storedRow = data as JobRow
+  const description = textFromHtml(storedRow.description)
+  const row = { ...storedRow, description, eligibility: classifyEligibility(storedRow.location, description) }
   if (row.created_by_user_id && row.created_by_user_id !== userId) throw new Error('Job not found')
   return mapJob(row, state ? { status: state.status as JobPipelineStatus, notes: state.notes as string } : undefined, scoreJob(row, preferences, cvSkills))
 }

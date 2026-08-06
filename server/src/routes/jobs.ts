@@ -11,7 +11,7 @@ jobRoutes.get('/', async (c) => {
   try {
     const cursor = Number(c.req.query('cursor') ?? 0)
     return c.json(await listJobs(c.get('userId'), {
-      search: c.req.query('search'), provider: c.req.query('provider'), pipeline: c.req.query('pipeline'),
+      search: c.req.query('search'), provider: c.req.query('provider'), pipeline: c.req.query('pipeline'), eligibility: c.req.query('eligibility'), relevance: c.req.query('relevance'),
       cursor: Number.isFinite(cursor) ? cursor : 0, limit: Number(c.req.query('limit') ?? 30), profileId: c.req.query('profileId'),
     }))
   } catch (error) {
