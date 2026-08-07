@@ -71,6 +71,7 @@ export function useJobMarketController() {
   const [error, setError] = useState<string | null>(null)
   const [showPreferences, setShowPreferences] = useState(false)
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false)
+  const [analysisJob, setAnalysisJob] = useState<Job | null>(null)
 
   const [modal, setModal] = useState<EntryModalMode>(null)
   const [manualJob, setManualJob] = useState(EMPTY_MANUAL_JOB)
@@ -266,6 +267,9 @@ export function useJobMarketController() {
     mobileDetailOpen,
     closeMobileDetail: () => setMobileDetailOpen(false),
     activeCvName: activeCv?.fileName ?? null,
+    analysisJob,
+    openAnalysis: (job: Job) => setAnalysisJob(job),
+    closeAnalysis: () => setAnalysisJob(null),
     modal,
     openJobModal: () => setModal('job'),
     openCompanyModal: () => setModal('company'),

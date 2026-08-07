@@ -107,6 +107,7 @@ type JobDetailProps = {
   detailRef: RefObject<HTMLElement | null>
   mobileOpen: boolean
   onCloseMobile: () => void
+  onAnalyze: () => void
   onPrepare: () => void
   onNotesChange: (notes: string) => void
   onNotesSave: () => void
@@ -118,6 +119,7 @@ function JobDetail({
   detailRef,
   mobileOpen,
   onCloseMobile,
+  onAnalyze,
   onPrepare,
   onNotesChange,
   onNotesSave,
@@ -209,7 +211,14 @@ function JobDetail({
         />
       </label>
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <button
+          type="button"
+          onClick={onAnalyze}
+          className={`${BUTTON_CLASS} border-accent text-accent`}
+        >
+          {copy.analyze}
+        </button>
         <button
           type="button"
           onClick={onPrepare}
@@ -262,6 +271,7 @@ type MarketViewProps = {
   onStateChange: (job: Job, status: JobPipelineStatus) => void
   onLoadMore: () => void
   onCloseMobile: () => void
+  onAnalyze: (job: Job) => void
   onPrepare: (job: Job) => void
   onNotesChange: (jobId: string, notes: string) => void
   onNotesSave: (job: Job) => void
@@ -435,6 +445,7 @@ export function MarketView(props: MarketViewProps) {
               detailRef={detailRef}
               mobileOpen={mobileDetailOpen}
               onCloseMobile={props.onCloseMobile}
+              onAnalyze={() => props.onAnalyze(selectedJob)}
               onPrepare={() => props.onPrepare(selectedJob)}
               onNotesChange={(notes) => props.onNotesChange(selectedJob.id, notes)}
               onNotesSave={() => props.onNotesSave(selectedJob)}
