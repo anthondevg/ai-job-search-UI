@@ -5,7 +5,6 @@ import {
   PipelineView,
   SourcesView,
 } from '../components/job-market/JobMarketViews'
-import JobAnalysisWidget from '../components/job-market/JobAnalysisWidget'
 import { BUTTON_CLASS, type JobMarketView } from '../components/job-market/jobMarketUi'
 import { useJobMarketController } from '../components/job-market/useJobMarketController'
 
@@ -104,6 +103,8 @@ export default function JobScraperMarket() {
             activeCvName={market.activeCvName}
             jobs={market.jobs}
             selectedJob={market.selectedJob}
+            analysisJob={market.analysisJob}
+            analysisOpen={market.analysisOpen}
             selectedId={market.selectedId}
             nextCursor={market.nextCursor}
             loading={market.loading}
@@ -130,6 +131,7 @@ export default function JobScraperMarket() {
             onLoadMore={() => void market.loadMore()}
             onCloseMobile={market.closeMobileDetail}
             onAnalyze={market.openAnalysis}
+            onCloseAnalysis={market.closeAnalysis}
             onPrepare={(job) => void market.prepareApplication(job)}
             onNotesChange={market.updateJobNotes}
             onNotesSave={(job) => void market.saveJobNotes(job)}
@@ -192,11 +194,6 @@ export default function JobScraperMarket() {
         />
       )}
 
-      <JobAnalysisWidget
-        job={market.analysisJob}
-        copy={market.copy}
-        onClose={market.closeAnalysis}
-      />
     </div>
   )
 }

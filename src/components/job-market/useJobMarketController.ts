@@ -72,6 +72,7 @@ export function useJobMarketController() {
   const [showPreferences, setShowPreferences] = useState(false)
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false)
   const [analysisJob, setAnalysisJob] = useState<Job | null>(null)
+  const [analysisOpen, setAnalysisOpen] = useState(false)
 
   const [modal, setModal] = useState<EntryModalMode>(null)
   const [manualJob, setManualJob] = useState(EMPTY_MANUAL_JOB)
@@ -155,6 +156,7 @@ export function useJobMarketController() {
       current.some((item) => item.id === job.id) ? current : [job, ...current],
     )
     setSelectedId(job.id)
+    setAnalysisOpen(false)
     requestAnimationFrame(() => {
       if (window.innerWidth < 1280) setMobileDetailOpen(true)
       else detailRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
@@ -268,8 +270,12 @@ export function useJobMarketController() {
     closeMobileDetail: () => setMobileDetailOpen(false),
     activeCvName: activeCv?.fileName ?? null,
     analysisJob,
-    openAnalysis: (job: Job) => setAnalysisJob(job),
-    closeAnalysis: () => setAnalysisJob(null),
+    analysisOpen,
+    openAnalysis: (job: Job) => {
+      setAnalysisJob(job)
+      setAnalysisOpen(true)
+    },
+    closeAnalysis: () => setAnalysisOpen(false),
     modal,
     openJobModal: () => setModal('job'),
     openCompanyModal: () => setModal('company'),

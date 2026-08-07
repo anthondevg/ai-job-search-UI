@@ -6,6 +6,7 @@ import type {
   JobSearchPreferences,
   JobSource,
 } from '../../types/jobMarket'
+import JobAnalysisWidget from './JobAnalysisWidget'
 import {
   BUTTON_CLASS,
   FIELD_CLASS,
@@ -106,7 +107,10 @@ type JobDetailProps = {
   copy: JobMarketCopy
   detailRef: RefObject<HTMLElement | null>
   mobileOpen: boolean
+  analysisActive: boolean
+  analysisAvailable: boolean
   onCloseMobile: () => void
+  onCloseAnalysis: () => void
   onAnalyze: () => void
   onPrepare: () => void
   onNotesChange: (notes: string) => void
@@ -118,7 +122,10 @@ function JobDetail({
   copy,
   detailRef,
   mobileOpen,
+  analysisActive,
+  analysisAvailable,
   onCloseMobile,
+  onCloseAnalysis,
   onAnalyze,
   onPrepare,
   onNotesChange,
@@ -176,49 +183,83 @@ function JobDetail({
         {eligibilityLabel}
       </p>
 
-      <div className="mt-4 grid grid-cols-4 gap-2 text-center text-[10px] uppercase text-muted">
-        {scoreFactors.map(([label, value]) => (
-          <div key={label} className="rounded-control border border-border p-2">
-            <strong className="block text-base text-heading">{value}</strong>
-            {label}
-          </div>
-        ))}
-      </div>
-
-      {job.salaryText && (
-        <p className="mt-4 rounded-control border border-success/30 bg-success-subtle p-3 text-sm text-success">
-          {job.salaryText}
-        </p>
-      )}
-
-      <section className="mt-6 border-t border-border pt-5">
-        <h3 className="mb-4 font-display text-lg font-semibold text-heading">
-          {copy.jobDescription}
-        </h3>
-        <div className="min-h-[30rem] whitespace-pre-wrap pr-3 text-[15px] leading-7 text-body">
-          {job.description || 'No description supplied. Open the original posting for details.'}
-        </div>
-      </section>
-
-      <label className="mt-4 block text-xs font-semibold text-muted">
-        {copy.notes}
-        <textarea
-          value={job.notes}
-          onChange={(event) => onNotesChange(event.target.value)}
-          onBlur={onNotesSave}
-          rows={3}
-          className={`${FIELD_CLASS} mt-2 resize-y`}
-        />
-      </label>
-
-      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+      <div
+        role="tablist"
+        aria-label={copy.analysisWidget}
+        className="mt-5 grid grid-cols-2 rounded-control border border-border bg-surface-muted p-1"
+      >
         <button
           type="button"
-          onClick={onAnalyze}
-          className={`${BUTTON_CLASS} border-accent text-accent`}
+          role="tab"
+          aria-selected={!analysisActive}
+          onClick={onCloseAnalysis}
+          className={`rounded-control px-3 py-2 text-xs font-semibold transition ${
+            !analysisActive
+              ? 'bg-surface-raised text-heading shadow-sm'
+              : 'text-muted hover:text-body'
+          }`}
         >
-          {copy.analyze}
+          {copy.jobTab}
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={analysisActive}
+          onClick={onAnalyze}
+          className={`rounded-control px-3 py-2 text-xs font-semibold transition ${
+            analysisActive
+              ? 'bg-accent text-white shadow-sm'
+              : 'text-accent hover:bg-accent/10'
+          }`}
+        >
+          {analysisAvailable ? copy.analysisTab : copy.analyze}
+        </button>
+      </div>
+
+      {analysisAvailable && (
+        <div hidden={!analysisActive}>
+          <JobAnalysisWidget job={job} copy={copy} />
+        </div>
+      )}
+
+      <div hidden={analysisActive}>
+        <div className="mt-4 grid grid-cols-4 gap-2 text-center text-[10px] uppercase text-muted">
+          {scoreFactors.map(([label, value]) => (
+            <div key={label} className="rounded-control border border-border p-2">
+              <strong className="block text-base text-heading">{value}</strong>
+              {label}
+            </div>
+          ))}
+        </div>
+
+        {job.salaryText && (
+          <p className="mt-4 rounded-control border border-success/30 bg-success-subtle p-3 text-sm text-success">
+            {job.salaryText}
+          </p>
+        )}
+
+        <section className="mt-6 border-t border-border pt-5">
+          <h3 className="mb-4 font-display text-lg font-semibold text-heading">
+            {copy.jobDescription}
+          </h3>
+          <div className="min-h-[30rem] whitespace-pre-wrap pr-3 text-[15px] leading-7 text-body">
+            {job.description || 'No description supplied. Open the original posting for details.'}
+          </div>
+        </section>
+
+        <label className="mt-4 block text-xs font-semibold text-muted">
+          {copy.notes}
+          <textarea
+            value={job.notes}
+            onChange={(event) => onNotesChange(event.target.value)}
+            onBlur={onNotesSave}
+            rows={3}
+            className={`${FIELD_CLASS} mt-2 resize-y`}
+          />
+        </label>
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <button
           type="button"
           onClick={onPrepare}
@@ -248,6 +289,8 @@ type MarketViewProps = {
   activeCvName: string | null
   jobs: Job[]
   selectedJob: Job | null
+  analysisJob: Job | null
+  analysisOpen: boolean
   selectedId: string | null
   nextCursor: string | null
   loading: boolean
@@ -272,6 +315,7 @@ type MarketViewProps = {
   onLoadMore: () => void
   onCloseMobile: () => void
   onAnalyze: (job: Job) => void
+  onCloseAnalysis: () => void
   onPrepare: (job: Job) => void
   onNotesChange: (jobId: string, notes: string) => void
   onNotesSave: (job: Job) => void
@@ -283,6 +327,8 @@ export function MarketView(props: MarketViewProps) {
     activeCvName,
     jobs,
     selectedJob,
+    analysisJob,
+    analysisOpen,
     selectedId,
     nextCursor,
     loading,
@@ -444,7 +490,10 @@ export function MarketView(props: MarketViewProps) {
               copy={copy}
               detailRef={detailRef}
               mobileOpen={mobileDetailOpen}
+              analysisActive={analysisOpen && analysisJob?.id === selectedJob.id}
+              analysisAvailable={analysisJob?.id === selectedJob.id}
               onCloseMobile={props.onCloseMobile}
+              onCloseAnalysis={props.onCloseAnalysis}
               onAnalyze={() => props.onAnalyze(selectedJob)}
               onPrepare={() => props.onPrepare(selectedJob)}
               onNotesChange={(notes) => props.onNotesChange(selectedJob.id, notes)}
