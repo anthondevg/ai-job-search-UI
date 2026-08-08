@@ -6,6 +6,17 @@ import type {
   UpdateCvResponse,
 } from '../types/cvProfile'
 import { apiFetch, parseApiError } from '../utils/apiClient'
+import { normalizeLanguageItems } from '../utils/cvLanguages'
+
+function normalizeRecord(record: SavedCvRecord): SavedCvRecord {
+  return {
+    ...record,
+    profile: {
+      ...record.profile,
+      languages: normalizeLanguageItems(record.profile.languages),
+    },
+  }
+}
 
 export async function parseCvPdf(file: File): Promise<SavedCvRecord> {
   const formData = new FormData()
@@ -24,7 +35,7 @@ export async function parseCvPdf(file: File): Promise<SavedCvRecord> {
     throw new Error(errorMessage)
   }
 
-  return (data as ParseCvResponse).record
+  return normalizeRecord((data as ParseCvResponse).record)
 }
 
 export async function fetchCvRecords(): Promise<SavedCvRecord[]> {
@@ -35,7 +46,7 @@ export async function fetchCvRecords(): Promise<SavedCvRecord[]> {
   }
 
   const data = (await response.json()) as ListCvResponse
-  return data.records
+  return data.records.map(normalizeRecord)
 }
 
 export async function deleteCvRecord(id: string): Promise<void> {
@@ -65,5 +76,5 @@ export async function updateCvRecord(
     throw new Error(errorMessage)
   }
 
-  return (data as UpdateCvResponse).record
+  return normalizeRecord((data as UpdateCvResponse).record)
 }

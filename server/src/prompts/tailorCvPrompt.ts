@@ -56,6 +56,7 @@ Copy exactly from sourceProfile. No changes.
 
 ### education, languages, certifications
 - Keep same items as sourceProfile
+- Preserve every language proficiency level exactly; never infer or upgrade a level
 - Reorder only if clearly relevant to the role
 
 ### ATS formatting constraints

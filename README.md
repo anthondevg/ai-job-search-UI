@@ -38,6 +38,22 @@ Two Chrome-style tabs:
 
 Authorized aggregation from public Greenhouse, Lever, Ashby, and Remotive feeds, with personalized ranking, company discovery, an application pipeline, and handoff to the tailored CV workflow. Restricted sites are link-only or manually imported; there is no general-purpose scraper.
 
+### Chrome extension (`extension/`)
+
+The optional Manifest V3 extension opens the compatibility workflow in Chrome's side panel. It deliberately has no content scripts, tab access, LinkedIn host permission, DOM extraction, overlays, or application automation. The user copies a job description and pastes it into the panel, then the extension compares it with a selected saved CV through the existing authenticated API.
+
+Build and load it locally:
+
+1. Configure `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and `VITE_API_URL` in the root `.env`. Use `http://localhost:3001` as `VITE_API_URL` for local development.
+2. Run `npm run build:extension`.
+3. Open `chrome://extensions`, enable **Developer mode**, and choose **Load unpacked**.
+4. Select the generated `dist-extension` directory.
+5. Click the extension toolbar icon to open the side panel.
+
+For production, copy the installed extension ID from `chrome://extensions`, add it to the API environment as `CHROME_EXTENSION_IDS`, and restart/redeploy the API. Multiple IDs can be comma-separated. Local development accepts unpacked Chrome extension origins automatically when `NODE_ENV` is not `production`.
+
+After rebuilding, use the **Reload** button on the extension card in `chrome://extensions`.
+
 ### App shell
 
 - Dark theme with semantic design tokens
@@ -115,6 +131,7 @@ cp server/.env.example server/.env
 | `PORT` | API port (default `3001`) |
 | `FRONTEND_URL` | Frontend origin for CORS (default `http://localhost:5173`) |
 | `FRONTEND_URLS` | Optional comma-separated origins; takes precedence over `FRONTEND_URL` |
+| `CHROME_EXTENSION_IDS` | Optional comma-separated Chrome extension IDs allowed by production CORS |
 | `CRON_SECRET` | Random 16+ character secret used by Vercel Cron to authenticate daily job sync |
 
 ### Configure the frontend

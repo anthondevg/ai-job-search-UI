@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
+import { useAuth } from '../auth/useAuth'
 import { useTranslation } from './useTranslation'
 import type { TranslationKey } from '../i18n/types'
 import { useActiveCvRecord, useCvStore } from '../stores/cvStore'
@@ -15,6 +16,8 @@ const uploadErrorKeys: Record<PdfValidationError, TranslationKey> = {
 
 export function useCvProfiles() {
   const { t } = useTranslation()
+  const { session } = useAuth()
+  const userId = session?.user.id
   const inputRef = useRef<HTMLInputElement>(null)
 
   const records = useCvStore((state) => state.records)
@@ -33,8 +36,13 @@ export function useCvProfiles() {
   const setStatus = useCvStore((state) => state.setStatus)
 
   useEffect(() => {
-    void loadRecords()
-  }, [loadRecords])
+    if (userId) void loadRecords(userId)
+  }, [loadRecords, userId])
+
+  const reloadRecords = useCallback(() => {
+    if (!userId) return Promise.resolve()
+    return loadRecords(userId)
+  }, [loadRecords, userId])
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -92,6 +100,6 @@ export function useCvProfiles() {
     setDragging,
     selectRecord,
     removeRecord: handleRemoveRecord,
-    reloadRecords: loadRecords,
+    reloadRecords,
   }
 }

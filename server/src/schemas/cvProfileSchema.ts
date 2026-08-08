@@ -52,7 +52,14 @@ export const cvProfileJsonSchema: Schema = {
     },
     languages: {
       type: Type.ARRAY,
-      items: { type: Type.STRING },
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          name: { type: Type.STRING },
+          level: { type: Type.STRING },
+        },
+        required: ['name', 'level'],
+      },
     },
     certifications: {
       type: Type.ARRAY,

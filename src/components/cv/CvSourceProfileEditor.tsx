@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useCvProfileEditor } from '../../hooks/useCvProfileEditor'
 import { useTranslation } from '../../hooks/useTranslation'
-import type { CVProfile, EducationItem, ProjectItem } from '../../types/cvProfile'
+import type {
+  CVProfile,
+  EducationItem,
+  LanguageLevel,
+  ProjectItem,
+} from '../../types/cvProfile'
+import { LANGUAGE_LEVELS } from '../../utils/cvLanguages'
 import SkillBadge from '../SkillBadge'
 
 type CvSourceProfileEditorProps = {
@@ -235,6 +241,7 @@ export default function CvSourceProfileEditor({
   const [editingEducationIndex, setEditingEducationIndex] = useState<number | null>(null)
   const [editingProjectIndex, setEditingProjectIndex] = useState<number | null>(null)
   const [languageInput, setLanguageInput] = useState('')
+  const [languageLevel, setLanguageLevel] = useState<LanguageLevel>('')
   const [certificationInput, setCertificationInput] = useState('')
 
   useEffect(() => {
@@ -334,12 +341,25 @@ export default function CvSourceProfileEditor({
 
   const addLanguage = (raw: string) => {
     const lang = normalizeSkill(raw)
-    if (!lang || hasSkill(draft.languages, lang)) return
+    if (
+      !lang ||
+      draft.languages.some((item) => item.name.toLowerCase() === lang.toLowerCase())
+    ) return
     updateDraft((prev) => ({
       ...prev,
-      languages: [...prev.languages, lang],
+      languages: [...prev.languages, { name: lang, level: languageLevel }],
     }))
     setLanguageInput('')
+    setLanguageLevel('')
+  }
+
+  const setLanguageItemLevel = (index: number, level: LanguageLevel) => {
+    updateDraft((prev) => ({
+      ...prev,
+      languages: prev.languages.map((item, i) =>
+        i === index ? { ...item, level } : item,
+      ),
+    }))
   }
 
   const removeLanguage = (index: number) => {
@@ -704,8 +724,26 @@ export default function CvSourceProfileEditor({
           {draft.languages.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-2">
               {draft.languages.map((lang, index) => (
-                <span key={`${lang}-${index}`} className="inline-flex items-center gap-1">
-                  <span className="match-chip match-chip-muted">{lang}</span>
+                <span key={`${lang.name}-${index}`} className="inline-flex items-center gap-1">
+                  <span className="match-chip match-chip-muted">{lang.name}</span>
+                  <select
+                    value={lang.level}
+                    onChange={(event) =>
+                      setLanguageItemLevel(index, event.target.value as LanguageLevel)
+                    }
+                    aria-label={`${t('pages.cv.preview.languageLevel')}: ${lang.name}`}
+                    className="match-input match-frame rounded-control border-border bg-surface-raised px-2 py-1 text-xs text-body"
+                  >
+                    {LANGUAGE_LEVELS.map((level) => (
+                      <option key={level || 'none'} value={level}>
+                        {level === ''
+                          ? t('pages.cv.preview.languageLevel')
+                          : level === 'Native'
+                            ? t('pages.cv.preview.languageLevelNative')
+                            : level}
+                      </option>
+                    ))}
+                  </select>
                   <button
                     type="button"
                     onClick={() => removeLanguage(index)}
@@ -739,6 +777,22 @@ export default function CvSourceProfileEditor({
               placeholder={t('pages.cv.preview.languagePlaceholder')}
               className="match-input match-frame min-w-0 flex-1 rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body placeholder:text-muted/70"
             />
+            <select
+              value={languageLevel}
+              onChange={(event) => setLanguageLevel(event.target.value as LanguageLevel)}
+              aria-label={t('pages.cv.preview.languageLevel')}
+              className="match-input match-frame rounded-control border-border bg-surface-raised px-3 py-2 text-sm text-body"
+            >
+              {LANGUAGE_LEVELS.map((level) => (
+                <option key={level || 'none'} value={level}>
+                  {level === ''
+                    ? t('pages.cv.preview.languageLevel')
+                    : level === 'Native'
+                      ? t('pages.cv.preview.languageLevelNative')
+                      : level}
+                </option>
+              ))}
+            </select>
             <button
               type="submit"
               disabled={!normalizeSkill(languageInput)}

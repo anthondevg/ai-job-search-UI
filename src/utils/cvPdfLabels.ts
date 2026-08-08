@@ -8,6 +8,7 @@ const labelsByLanguage: Record<CvOutputLanguage, CvPdfLabels> = {
     experience: 'Experience',
     education: 'Education',
     languages: 'Languages',
+    languageLevelNative: 'Native',
     certifications: 'Certifications',
   },
   es: {
@@ -16,6 +17,7 @@ const labelsByLanguage: Record<CvOutputLanguage, CvPdfLabels> = {
     experience: 'Experiencia',
     education: 'Educación',
     languages: 'Idiomas',
+    languageLevelNative: 'Nativo',
     certifications: 'Certificaciones',
   },
 }

@@ -22,13 +22,20 @@ export type EducationItem = {
   endDate: string
 }
 
+export type LanguageLevel = '' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | 'Native'
+
+export type LanguageItem = {
+  name: string
+  level: LanguageLevel
+}
+
 export type CVProfile = {
   personalInfo: PersonalInfo
   summary: string
   skills: string[]
   experience: ExperienceItem[]
   education: EducationItem[]
-  languages: string[]
+  languages: LanguageItem[]
   certifications: string[]
 }
 

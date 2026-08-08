@@ -7,6 +7,7 @@ import {
 } from '@react-pdf/renderer'
 import type { ReactNode } from 'react'
 import type { CVProfile } from '../../../types/cvProfile'
+import { formatLanguageItem } from '../../../utils/cvLanguages'
 import { cvPdfStyles as styles } from './cvPdfStyles'
 
 export type CvPdfLabels = {
@@ -15,6 +16,7 @@ export type CvPdfLabels = {
   experience: string
   education: string
   languages: string
+  languageLevelNative: string
   certifications: string
 }
 
@@ -150,7 +152,11 @@ export default function CvPdfDocument({ profile, labels }: CvPdfDocumentProps) {
 
         {profile.languages.length > 0 && (
           <Section title={labels.languages}>
-            <Text style={styles.mutedLine}>{profile.languages.join(' • ')}</Text>
+            <Text style={styles.mutedLine}>
+              {profile.languages
+                .map((language) => formatLanguageItem(language, labels.languageLevelNative))
+                .join(' • ')}
+            </Text>
           </Section>
         )}
 

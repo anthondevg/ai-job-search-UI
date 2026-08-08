@@ -2,6 +2,8 @@ import type {
   CVProfile,
   EducationItem,
   ExperienceItem,
+  LanguageItem,
+  LanguageLevel,
   PersonalInfo,
 } from '../types/cvProfile.js'
 
@@ -60,6 +62,29 @@ function normalizeEducation(value: unknown): EducationItem[] {
     .filter((item) => item.institution || item.degree)
 }
 
+const LANGUAGE_LEVELS = new Set<LanguageLevel>([
+  '', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'Native',
+])
+
+function normalizeLanguages(value: unknown): LanguageItem[] {
+  if (!Array.isArray(value)) return []
+
+  return value.flatMap((item) => {
+    if (typeof item === 'string') {
+      const name = item.trim()
+      return name ? [{ name, level: '' as const }] : []
+    }
+
+    if (!item || typeof item !== 'object') return []
+    const record = item as Record<string, unknown>
+    const name = asString(record.name)
+    if (!name) return []
+
+    const level = asString(record.level) as LanguageLevel
+    return [{ name, level: LANGUAGE_LEVELS.has(level) ? level : '' }]
+  })
+}
+
 export function validateCvProfile(data: unknown): CVProfile {
   if (!data || typeof data !== 'object') {
     throw new Error('Invalid CV profile response from model')
@@ -72,7 +97,7 @@ export function validateCvProfile(data: unknown): CVProfile {
     skills: asStringArray(record.skills),
     experience: normalizeExperience(record.experience),
     education: normalizeEducation(record.education),
-    languages: asStringArray(record.languages),
+    languages: normalizeLanguages(record.languages),
     certifications: asStringArray(record.certifications),
   }
 

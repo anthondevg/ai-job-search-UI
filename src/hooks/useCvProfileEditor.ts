@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useCvStore } from '../stores/cvStore'
 import type { CVProfile } from '../types/cvProfile'
+import { normalizeLanguageItems } from '../utils/cvLanguages'
 
 const SAVE_DEBOUNCE_MS = 600
 
@@ -9,7 +10,7 @@ function normalizeProfile(profile: CVProfile): CVProfile {
     ...profile,
     education: profile.education ?? [],
     projects: profile.projects ?? [],
-    languages: profile.languages ?? [],
+    languages: normalizeLanguageItems(profile.languages),
     certifications: profile.certifications ?? [],
     skills: profile.skills ?? [],
     experience: profile.experience ?? [],

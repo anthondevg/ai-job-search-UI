@@ -22,6 +22,8 @@ export type CvUploadTranslations = {
 export type CvLibraryTranslations = {
   title: string
   description: string
+  manage: string
+  close: string
   loading: string
   empty: string
   active: string
@@ -48,6 +50,8 @@ export type CvPreviewTranslations = {
   addEducation: string
   removeEducation: string
   languages: string
+  languageLevel: string
+  languageLevelNative: string
   addLanguage: string
   languagePlaceholder: string
   removeLanguage: string

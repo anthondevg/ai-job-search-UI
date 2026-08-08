@@ -8,12 +8,19 @@ import {
 import type { CvUploadStatus, CVProfile, SavedCvRecord } from '../types/cvProfile'
 import { useGenerateStore } from './generateStore'
 import { useJobDescriptionStore } from './jobDescriptionStore'
+import { normalizeLanguageItems } from '../utils/cvLanguages'
 
-const ACTIVE_ID_STORAGE_KEY = 'ai-job-search-cv-store-active-id'
+const CV_CACHE_KEY_PREFIX = 'ai-job-search-cv-cache-v1:'
+
+type CachedCvState = {
+  records: SavedCvRecord[]
+  activeId: string | null
+}
 
 type CvState = {
   records: SavedCvRecord[]
   activeId: string | null
+  currentUserId: string | null
   isLoading: boolean
   status: CvUploadStatus
   error: string | null
@@ -22,7 +29,7 @@ type CvState = {
 }
 
 type CvActions = {
-  loadRecords: () => Promise<void>
+  loadRecords: (userId: string) => Promise<void>
   selectRecord: (id: string) => void
   uploadPdf: (file: File) => Promise<void>
   updateProfile: (id: string, profile: CVProfile) => Promise<void>
@@ -38,16 +45,49 @@ type CvActions = {
 
 export type CvStore = CvState & CvActions
 
-function readPersistedActiveId(): string | null {
-  return localStorage.getItem(ACTIVE_ID_STORAGE_KEY)
+function getCacheKey(userId: string): string {
+  return `${CV_CACHE_KEY_PREFIX}${userId}`
 }
 
-function persistActiveId(id: string | null) {
-  if (id) {
-    localStorage.setItem(ACTIVE_ID_STORAGE_KEY, id)
-    return
+function readCachedState(userId: string): CachedCvState | null {
+  try {
+    const value = localStorage.getItem(getCacheKey(userId))
+    if (!value) return null
+
+    const cached = JSON.parse(value) as Partial<CachedCvState>
+    if (!Array.isArray(cached.records)) return null
+
+    return {
+      records: cached.records.map((record) => ({
+        ...record,
+        profile: {
+          ...record.profile,
+          languages: normalizeLanguageItems(record.profile?.languages),
+        },
+      })),
+      activeId: typeof cached.activeId === 'string' ? cached.activeId : null,
+    }
+  } catch {
+    return null
   }
-  localStorage.removeItem(ACTIVE_ID_STORAGE_KEY)
+}
+
+function persistCachedState(
+  userId: string | null,
+  records: SavedCvRecord[],
+  activeId: string | null,
+) {
+  if (!userId) return
+
+  try {
+    localStorage.setItem(
+      getCacheKey(userId),
+      JSON.stringify({ records, activeId } satisfies CachedCvState),
+    )
+  } catch {
+    // The server remains the source of truth if browser storage is unavailable
+    // or its quota has been reached.
+  }
 }
 
 function resolveActiveId(
@@ -61,18 +101,10 @@ function resolveActiveId(
   return records[0]?.id ?? null
 }
 
-function applyActiveId(
-  set: (partial: Partial<CvState>) => void,
-  activeId: string | null,
-  extra?: Partial<CvState>,
-) {
-  persistActiveId(activeId)
-  set({ activeId, ...extra })
-}
-
 export const useCvStore = create<CvStore>()((set, get) => ({
   records: [],
-  activeId: readPersistedActiveId(),
+  activeId: null,
+  currentUserId: null,
   isLoading: true,
   status: 'idle',
   error: null,
@@ -87,12 +119,14 @@ export const useCvStore = create<CvStore>()((set, get) => ({
     set({ profileSaveStatus, profileSaveError }),
 
   selectRecord: (id) => {
-    applyActiveId(set, id, {
+    set({
+      activeId: id,
       status: 'success',
       error: null,
       profileSaveStatus: 'idle',
       profileSaveError: null,
     })
+    persistCachedState(get().currentUserId, get().records, id)
   },
 
   setDragging: (isDragging) => {
@@ -103,25 +137,41 @@ export const useCvStore = create<CvStore>()((set, get) => ({
     set({ status: isDragging ? 'dragging' : hasActive ? 'success' : 'idle' })
   },
 
-  loadRecords: async () => {
-    set({ isLoading: true, error: null })
+  loadRecords: async (userId) => {
+    const cached = readCachedState(userId)
+    const cachedRecords = cached?.records ?? []
+    const cachedActiveId = resolveActiveId(cachedRecords, cached?.activeId ?? null)
+
+    set({
+      currentUserId: userId,
+      records: cachedRecords,
+      activeId: cachedActiveId,
+      isLoading: !cached,
+      error: null,
+      status: cachedActiveId ? 'success' : 'idle',
+    })
 
     try {
       const nextRecords = await fetchCvRecords()
+      if (get().currentUserId !== userId) return
+
       const nextActiveId = resolveActiveId(nextRecords, get().activeId)
 
-      applyActiveId(set, nextActiveId, {
+      set({
+        activeId: nextActiveId,
         records: nextRecords,
         status: nextActiveId ? 'success' : 'idle',
       })
+      persistCachedState(userId, nextRecords, nextActiveId)
     } catch (error) {
+      if (get().currentUserId !== userId) return
       set({
         error:
           error instanceof Error ? error.message : 'Failed to load saved CVs',
-        status: 'error',
+        status: get().records.length ? 'success' : 'error',
       })
     } finally {
-      set({ isLoading: false })
+      if (get().currentUserId === userId) set({ isLoading: false })
     }
   },
 
@@ -135,10 +185,12 @@ export const useCvStore = create<CvStore>()((set, get) => ({
         ...get().records.filter((item) => item.id !== record.id),
       ]
 
-      applyActiveId(set, record.id, {
+      set({
+        activeId: record.id,
         records: nextRecords,
         status: 'success',
       })
+      persistCachedState(get().currentUserId, nextRecords, record.id)
     } catch (error) {
       set({
         error:
@@ -170,6 +222,7 @@ export const useCvStore = create<CvStore>()((set, get) => ({
         profileSaveStatus: 'saved',
         profileSaveError: null,
       })
+      persistCachedState(get().currentUserId, get().records, get().activeId)
     } catch (error) {
       set({
         records: previousRecords,
@@ -195,10 +248,12 @@ export const useCvStore = create<CvStore>()((set, get) => ({
         ? resolveActiveId(nextRecords, null)
         : get().activeId
 
-      applyActiveId(set, nextActiveId, {
+      set({
+        activeId: nextActiveId,
         records: nextRecords,
         status: nextActiveId ? 'success' : 'idle',
       })
+      persistCachedState(get().currentUserId, nextRecords, nextActiveId)
     } catch (error) {
       set({
         error:

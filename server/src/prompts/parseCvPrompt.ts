@@ -9,5 +9,6 @@ CRITICAL RULES — follow exactly:
 6. For current roles, use "present" as endDate.
 7. Preserve original date formats when possible (e.g. "Jan 2022", "2020-2023").
 8. Do not fill gaps with assumed data. Empty is better than invented.
+9. For languages, return objects with name and CEFR level (A1, A2, B1, B2, C1, C2, or Native) only when explicitly stated. Use an empty level when unspecified.
 
 Return JSON matching the provided schema. This data will be used as the single source of truth for CV generation.`

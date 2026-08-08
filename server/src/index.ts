@@ -15,6 +15,27 @@ const frontendUrls = (
   .map((url) => url.trim())
   .filter(Boolean)
 
+const chromeExtensionOrigins = (process.env.CHROME_EXTENSION_IDS ?? '')
+  .split(',')
+  .map((id) => id.trim())
+  .filter(Boolean)
+  .map((id) => `chrome-extension://${id}`)
+
+function resolveCorsOrigin(origin: string): string | undefined {
+  if (frontendUrls.includes(origin) || chromeExtensionOrigins.includes(origin)) {
+    return origin
+  }
+
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    /^chrome-extension:\/\/[a-p]{32}$/.test(origin)
+  ) {
+    return origin
+  }
+
+  return undefined
+}
+
 export const app = new Hono()
 
 app.use('*', secureHeaders())
@@ -22,7 +43,7 @@ app.use('*', secureHeaders())
 app.use(
   '*',
   cors({
-    origin: frontendUrls,
+    origin: resolveCorsOrigin,
     allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Authorization', 'Content-Type', 'X-Legacy-Session-Id'],
   }),
