@@ -9,6 +9,7 @@ type CvRecordCardProps = {
   onDelete?: () => void
   readOnly?: boolean
   badgeLabel?: string
+  compact?: boolean
 }
 
 function DeleteIcon({ className = 'size-4' }: { className?: string }) {
@@ -45,10 +46,34 @@ export default function CvRecordCard({
   onDelete,
   readOnly = false,
   badgeLabel,
+  compact = false,
 }: CvRecordCardProps) {
   const { t, language } = useTranslation()
   const locale = language === 'es' ? 'es-ES' : 'en-US'
   const resolvedBadge = badgeLabel ?? t('pages.cv.library.active')
+
+  if (compact) {
+    return (
+      <div className="flex min-w-0 items-center gap-2.5 rounded-control border border-border bg-surface-raised px-3 py-2">
+        <span className="flex size-7 shrink-0 items-center justify-center bg-accent-subtle text-accent">
+          <CvDocumentIcon className="size-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs font-semibold text-heading">
+            {record.profile.personalInfo.name || record.fileName}
+          </p>
+          <p className="truncate font-mono text-[10px] text-muted">
+            {record.fileName}
+          </p>
+        </div>
+        {isActive && (
+          <span className="shrink-0 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-accent">
+            {resolvedBadge}
+          </span>
+        )}
+      </div>
+    )
+  }
 
   const textBlock = (
     <div className={`min-w-0 flex-1 ${isActive ? 'pr-12' : ''}`}>

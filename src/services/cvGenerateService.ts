@@ -21,6 +21,7 @@ type ApiError = { error: string }
 export async function analyzeJobDescription(
   jobDescription: string,
   sourceProfile?: CVProfile,
+  responseLanguage: CvOutputLanguage = 'en',
 ): Promise<{
   analysis: JobDescriptionAnalysis
   compatibility: ProfileCompatibility | null
@@ -38,6 +39,7 @@ export async function analyzeJobDescription(
     body: JSON.stringify({
       jobDescription,
       ...(sourceProfile ? { sourceProfile } : {}),
+      responseLanguage,
     }),
   })
 

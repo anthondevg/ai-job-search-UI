@@ -21,6 +21,7 @@ generateRoutes.post('/analyze-job', async (c) => {
     const body = await c.req.json<{
       jobDescription?: string
       sourceProfile?: CVProfile
+      responseLanguage?: string
     }>()
     const jobDescription = body.jobDescription
 
@@ -37,6 +38,7 @@ generateRoutes.post('/analyze-job', async (c) => {
         sourceProfile,
         jobDescription,
         analysis,
+        parseCvOutputLanguage(body.responseLanguage),
       )
     }
 

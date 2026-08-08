@@ -204,9 +204,12 @@ export type CvGenerateOutputLanguageTranslations = {
 
 export type CvGenerateCompatibilityLocationTranslations = {
   title: string
+  details: string
   candidate: string
   job: string
+  unknown: string
   remotePolicy: string
+  restrictions: string
   eligibility: {
     eligible: string
     likely_eligible: string
@@ -232,7 +235,10 @@ export type CvGenerateCompatibilityLocationTranslations = {
 export type CvGenerateCompatibilityTranslations = {
   title: string
   match: string
+  overallMatch: string
+  applicationSignal: string
   skillsScore: string
+  skillsHint: string
   strengths: string
   gaps: string
   level: {

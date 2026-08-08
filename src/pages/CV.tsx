@@ -13,13 +13,17 @@ export default function CV() {
   )
 
   return (
-    <div className="match-page flex flex-1 flex-col p-4 sm:p-6 lg:p-8">
-      <header className="match-page-header mb-6 pb-5 sm:mb-8 sm:pb-7">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">Career workspace / 01</p>
-        <h1 className="mt-2 font-display text-3xl font-semibold text-heading sm:text-4xl">
-          {t('pages.cv.title')}
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+    <div className="match-page flex flex-1 flex-col p-3 sm:p-4 lg:p-5">
+      <header className="match-page-header mb-3 flex flex-wrap items-baseline gap-x-4 gap-y-1 pb-3">
+        <div className="flex items-baseline gap-3">
+          <h1 className="font-display text-2xl font-semibold text-heading">
+            {t('pages.cv.title')}
+          </h1>
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-accent">
+            Career workspace / 01
+          </p>
+        </div>
+        <p className="min-w-0 flex-1 text-xs text-muted sm:text-right">
           {t('pages.cv.description')}
         </p>
       </header>

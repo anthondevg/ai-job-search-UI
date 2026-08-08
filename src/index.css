@@ -6,73 +6,73 @@
   --font-sans: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Surfaces — deep graphite (near-black) */
-  --color-surface: #151821;
-  --color-surface-raised: #1d2230;
-  --color-surface-muted: #10131b;
-  --color-surface-tab: #262d3c;
+  /* Surfaces — clearer graphite elevation */
+  --color-surface: #10131a;
+  --color-surface-raised: #1d2431;
+  --color-surface-muted: #0b0e14;
+  --color-surface-tab: #171c26;
 
   /* Text */
-  --color-heading: #eef2fa;
-  --color-body: #c8d4e4;
-  --color-muted: #8892a8;
+  --color-heading: #f2f5fa;
+  --color-body: #cad3e0;
+  --color-muted: #929db0;
 
   /* Borders */
-  --color-border: #3b465c;
-  --color-border-muted: #283143;
+  --color-border: #30394a;
+  --color-border-muted: #222a38;
 
-  /* Border weights — chunkier studio frames */
-  --border-width: 2px;
-  --border-width-2: 3px;
-  --border-width-4: 4px;
-  --border-width-rail: 4px;
-  --border-width-rail-focus: 5px;
-  --border-width-notch: 3px;
-  --border-width-chip: 3px;
+  /* Border weights — restrained editorial frames */
+  --border-width: 1px;
+  --border-width-2: 2px;
+  --border-width-4: 3px;
+  --border-width-rail: 3px;
+  --border-width-rail-focus: 4px;
+  --border-width-notch: 2px;
+  --border-width-chip: 2px;
 
   /* Accent — soft periwinkle */
-  --color-accent: #a8c0ff;
-  --color-accent-hover: #c1d1ff;
-  --color-accent-subtle: #25304a;
-  --color-accent-foreground: #111827;
+  --color-accent: #9bb2ff;
+  --color-accent-hover: #b4c5ff;
+  --color-accent-subtle: #222c49;
+  --color-accent-foreground: #0f1523;
 
-  /* Warm — dusty lavender */
-  --color-warm: #c6b5f4;
-  --color-warm-hover: #d4c7fa;
-  --color-warm-subtle: #302c48;
-  --color-warm-foreground: #eef2fa;
+  /* Warm — semantic warning */
+  --color-warm: #e8c36a;
+  --color-warm-hover: #f1d486;
+  --color-warm-subtle: #332c1c;
+  --color-warm-foreground: #15120a;
 
-  /* Success — sea glass */
-  --color-success: #8ec4b4;
-  --color-success-subtle: #1f2d30;
+  /* Success */
+  --color-success: #65d1ae;
+  --color-success-subtle: #173029;
 
-  /* Alert — soft mauve */
-  --color-danger: #c8b0b8;
-  --color-danger-subtle: #2e2632;
-  --color-danger-border: #5a4a52;
+  /* Alert */
+  --color-danger: #f08f9b;
+  --color-danger-subtle: #351f27;
+  --color-danger-border: #71404a;
 
   /* Links */
-  --color-link: #9aafd9;
-  --color-link-subtle: #262d3e;
+  --color-link: #9bb2ff;
+  --color-link-subtle: #202945;
 
   /* Sidebar — deep anchor */
-  --color-sidebar: #12141a;
-  --color-sidebar-hover: #1b1e26;
-  --color-sidebar-active: #242830;
-  --color-sidebar-border: #2a2f3a;
-  --color-sidebar-heading: #eef2fa;
-  --color-sidebar-body: #c8d4e4;
-  --color-sidebar-muted: #9aa4b8;
+  --color-sidebar: #0d1016;
+  --color-sidebar-hover: #171c26;
+  --color-sidebar-active: #202735;
+  --color-sidebar-border: #252d3b;
+  --color-sidebar-heading: #f2f5fa;
+  --color-sidebar-body: #cad3e0;
+  --color-sidebar-muted: #929db0;
 
-  /* Skill badge — neo-brutalist pills */
-  --color-badge-ink: #1a2030;
-  --color-badge-stroke: #1a2030;
-  --color-badge-coral: #f4a89e;
-  --color-badge-mint: #9fe8ca;
-  --color-badge-cyan: #72e8e0;
-  --color-badge-yellow: #f7ef72;
-  --color-badge-lavender: #c8bdea;
-  --color-badge-missing: #f0c0c8;
+  /* Skill badges — neutral pills with restrained category markers */
+  --color-badge-ink: #cad3e0;
+  --color-badge-stroke: #30394a;
+  --color-badge-coral: #d78f89;
+  --color-badge-mint: #65d1ae;
+  --color-badge-cyan: #6fc9d2;
+  --color-badge-yellow: #d6b75f;
+  --color-badge-lavender: #a99bd6;
+  --color-badge-missing: #f08f9b;
 
   /* Radius */
   --radius-tag: 0.125rem;
@@ -96,8 +96,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-surface);
   background-image:
-    linear-gradient(color-mix(in srgb, var(--color-border-muted) 50%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-border-muted) 50%, transparent) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--color-border-muted) 30%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-border-muted) 30%, transparent) 1px, transparent 1px);
   background-size: 40px 40px;
   color: var(--color-body);
 }
@@ -347,8 +347,9 @@ body {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
-    border: var(--border-width-2) solid var(--color-badge-stroke);
-    padding: 0.3125rem 0.875rem;
+    border: var(--border-width) solid var(--color-badge-stroke);
+    background-color: var(--color-surface-tab);
+    padding: 0.3rem 0.75rem;
     font-family: var(--font-sans);
     font-size: 0.75rem;
     font-weight: 600;
@@ -358,26 +359,43 @@ body {
   }
 
   .match-skill-badge-coral {
-    background-color: var(--color-badge-coral);
+    box-shadow: inset 3px 0 var(--color-badge-coral);
   }
 
   .match-skill-badge-mint {
-    background-color: var(--color-badge-mint);
+    box-shadow: inset 3px 0 var(--color-badge-mint);
   }
 
   .match-skill-badge-cyan {
-    background-color: var(--color-badge-cyan);
+    box-shadow: inset 3px 0 var(--color-badge-cyan);
   }
 
   .match-skill-badge-yellow {
-    background-color: var(--color-badge-yellow);
+    box-shadow: inset 3px 0 var(--color-badge-yellow);
   }
 
   .match-skill-badge-lavender {
-    background-color: var(--color-badge-lavender);
+    box-shadow: inset 3px 0 var(--color-badge-lavender);
   }
 
   .match-skill-badge-missing {
-    background-color: var(--color-badge-missing);
+    border-color: color-mix(in srgb, var(--color-danger) 45%, var(--color-border));
+    background-color: var(--color-danger-subtle);
+    color: var(--color-danger);
+    box-shadow: inset 3px 0 var(--color-badge-missing);
+  }
+
+  .match-skill-badge-matched {
+    border-color: color-mix(in srgb, var(--color-success) 40%, var(--color-border));
+    background-color: var(--color-success-subtle);
+    color: var(--color-success);
+    box-shadow: inset 3px 0 var(--color-success);
+  }
+
+  .match-skill-badge-keyword {
+    border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+    background-color: var(--color-accent-subtle);
+    color: var(--color-accent);
+    box-shadow: inset 3px 0 var(--color-accent);
   }
 }

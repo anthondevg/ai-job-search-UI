@@ -4,6 +4,9 @@ INPUT JSON contains:
 - sourceProfile: the candidate's real CV (single source of truth) — use personalInfo.location as candidate location
 - jobDescription: full posting text
 - jobAnalysis: extracted keywords, skills, seniority, responsibilities
+- outputLanguage: "en" or "es"
+
+Write summary, verdict, restrictions, strengths, and gaps in outputLanguage. Preserve company names, product names, and technical terms exactly as written in the posting.
 
 ## Part 1 — Skills & experience score (skillsScore: 0–100)
 Base ONLY on evidence in sourceProfile. Never assume skills not stated in the CV.

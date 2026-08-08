@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { analyzeJobDescription } from '../../services/cvGenerateService'
+import { useTranslation } from '../../hooks/useTranslation'
 import { useActiveCvRecord } from '../../stores/cvStore'
 import type { ProfileCompatibility } from '../../types/compatibility'
 import type { JobDescriptionAnalysis } from '../../types/jobDescription'
@@ -23,6 +24,7 @@ export default function JobAnalysisWidget({
   copy,
 }: JobAnalysisWidgetProps) {
   const activeCv = useActiveCvRecord()
+  const { language } = useTranslation()
   const analysisText = buildAnalysisText(job)
   const requestIdRef = useRef(0)
   const [analysis, setAnalysis] = useState<JobDescriptionAnalysis | null>(null)
@@ -44,6 +46,7 @@ export default function JobAnalysisWidget({
       const result = await analyzeJobDescription(
         analysisText,
         activeCv?.profile,
+        language,
       )
       if (requestId !== requestIdRef.current) return
       setAnalysis(result.analysis)
@@ -54,7 +57,7 @@ export default function JobAnalysisWidget({
       setError(reason instanceof Error ? reason.message : 'Analysis failed')
       setStatus('error')
     }
-  }, [activeCv?.profile, analysisText])
+  }, [activeCv?.profile, analysisText, language])
 
   useEffect(() => {
     void runAnalysis()

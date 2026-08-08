@@ -19,7 +19,7 @@ export type GenerateBlockedReason =
   | null
 
 export function useCvGeneration() {
-  const { t } = useTranslation()
+  const { t, language } = useTranslation()
   const activeRecord = useActiveCvRecord()
 
   const text = useJobDescriptionStore((state) => state.text)
@@ -101,6 +101,7 @@ export function useCvGeneration() {
       const result = await analyzeJobDescriptionApi(
         currentText,
         activeRecord?.profile,
+        language,
       )
       setAnalysis(result.analysis)
       setCompatibility(result.compatibility)
@@ -113,6 +114,7 @@ export function useCvGeneration() {
     }
   }, [
     activeRecord?.profile,
+    language,
     setAnalysis,
     setCompatibility,
     setCoverLetterError,

@@ -197,7 +197,10 @@ export const translations: Record<Language, Translations> = {
           compatibility: {
             title: 'Profile fit',
             match: 'Match',
+            overallMatch: 'Overall fit',
+            applicationSignal: 'Can you realistically apply?',
             skillsScore: 'Skills match',
+            skillsHint: 'Technical fit before location restrictions',
             strengths: 'Strengths',
             gaps: 'Gaps',
             level: {
@@ -208,9 +211,12 @@ export const translations: Record<Language, Translations> = {
             },
           location: {
             title: 'Location & remote eligibility',
+            details: 'Eligibility details',
             candidate: 'Your location',
             job: 'Job location',
+            unknown: 'Location not specified',
             remotePolicy: 'Remote / work policy',
+            restrictions: 'View restrictions',
             eligibility: {
               eligible: 'You can likely apply from your location',
               likely_eligible: 'Good chance — verify remote policy',
@@ -539,7 +545,10 @@ export const translations: Record<Language, Translations> = {
           compatibility: {
             title: 'Compatibilidad con el puesto',
             match: 'Match',
+            overallMatch: 'Compatibilidad general',
+            applicationSignal: '¿Puedes aplicar realmente?',
             skillsScore: 'Match de skills',
+            skillsHint: 'Encaje técnico antes de restricciones geográficas',
             strengths: 'Fortalezas',
             gaps: 'Brechas',
             level: {
@@ -550,9 +559,12 @@ export const translations: Record<Language, Translations> = {
             },
           location: {
             title: 'Ubicación y elegibilidad remota',
+            details: 'Detalles de elegibilidad',
             candidate: 'Tu ubicación',
             job: 'Ubicación del empleo',
+            unknown: 'Ubicación no especificada',
             remotePolicy: 'Política remota / trabajo',
+            restrictions: 'Ver restricciones',
             eligibility: {
               eligible: 'Puedes aplicar desde tu ubicación',
               likely_eligible: 'Buenas chances — confirma la política remota',

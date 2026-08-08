@@ -242,6 +242,7 @@ export async function calculateProfileCompatibility(
   sourceProfile: CVProfile,
   jobDescription: string,
   analysis: JobDescriptionAnalysis,
+  outputLanguage: CvOutputLanguage = 'en',
 ): Promise<ProfileCompatibility> {
   const trimmed = assertJobDescriptionLength(jobDescription)
 
@@ -250,6 +251,7 @@ export async function calculateProfileCompatibility(
       sourceProfile,
       jobDescription: trimmed,
       jobAnalysis: analysis,
+      outputLanguage,
     },
     null,
     2,

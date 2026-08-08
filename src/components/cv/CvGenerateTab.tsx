@@ -25,7 +25,7 @@ export default function CvGenerateTab() {
   } = useCvGeneration()
 
   return (
-    <div className="flex flex-col gap-6 pb-4">
+    <div className="flex flex-col gap-3 pb-3">
       {DEV_MOCK_GENERATE && (
         <div
           className="match-rail match-rail-warm match-notch match-notch-warm rounded-card bg-warm-subtle px-4 py-2 font-mono text-xs text-warm"
@@ -40,13 +40,14 @@ export default function CvGenerateTab() {
         isProcessing={isAnalyzing || isGenerating}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:items-start">
-        <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:items-start">
+        <div className="space-y-3 lg:sticky lg:top-3 lg:self-start">
           {activeRecord ? (
             <CvRecordCard
               record={activeRecord}
               isActive
               readOnly
+              compact
               badgeLabel={t('pages.cv.library.active')}
             />
           ) : (

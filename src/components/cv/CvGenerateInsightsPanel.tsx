@@ -67,12 +67,9 @@ export default function CvGenerateInsightsPanel({
       </div>
 
       {compatibility && (
-        <CollapsibleSection
-          title={t('pages.cv.generate.compatibility.title')}
-          defaultOpen
-        >
+        <div aria-label={t('pages.cv.generate.compatibility.title')}>
           <ProfileCompatibilityCard compatibility={compatibility} bare />
-        </CollapsibleSection>
+        </div>
       )}
 
       {analysis && (

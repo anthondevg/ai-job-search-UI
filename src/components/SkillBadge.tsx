@@ -10,9 +10,9 @@ type SkillBadgeProps = {
 function getVariantClass(label: string, variant: SkillBadgeVariant): string {
   switch (variant) {
     case 'matched':
-      return 'match-skill-badge-mint'
+      return 'match-skill-badge-matched'
     case 'keyword':
-      return 'match-skill-badge-cyan'
+      return 'match-skill-badge-keyword'
     case 'missing':
       return 'match-skill-badge-missing'
     case 'skill':
